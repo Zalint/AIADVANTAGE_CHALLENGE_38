@@ -43,7 +43,7 @@ Choose from carefully curated emotional themes:
 - **Optimized Speech**: Slightly slower rate for better comprehension
 
 ### 🛡️ Smart Rate Limiting
-- **Daily Limits**: 100 requests per day (configurable via environment variable)
+- **Daily Limits**: 25 requests per day (configurable via environment variable)
 - **Usage Tracking**: Real-time display of daily quota
 - **Dual Tracking**: Server-side IP tracking + client-side localStorage backup
 - **Graceful Degradation**: Clear messaging when limits reached
@@ -71,7 +71,7 @@ npm install
 Create a `.env` file in the project root:
 ```bash
 OPENAI_API_KEY=your_openai_api_key_here
-DAILY_REQUEST_LIMIT=100  # Optional: default is 100
+DAILY_REQUEST_LIMIT=25  # Optional: default is 25
 ```
 
 ### 4. Deploy to Netlify
@@ -82,7 +82,7 @@ DAILY_REQUEST_LIMIT=100  # Optional: default is 100
 3. Set environment variables in Netlify dashboard:
    - Go to Site settings → Environment variables
    - Add `OPENAI_API_KEY` with your OpenAI API key
-   - Optionally add `DAILY_REQUEST_LIMIT` (default: 100)
+   - Optionally add `DAILY_REQUEST_LIMIT` (default: 25)
 4. Deploy automatically on every push
 
 #### Option B: Netlify CLI
@@ -111,7 +111,7 @@ netlify env:set OPENAI_API_KEY your_api_key_here
 | Variable | Description | Default | Required |
 |----------|-------------|---------|----------|
 | `OPENAI_API_KEY` | Your OpenAI API key | - | ✅ Yes |
-| `DAILY_REQUEST_LIMIT` | Max requests per day per IP | 100 | ❌ No |
+| `DAILY_REQUEST_LIMIT` | Max requests per day per IP | 25 | ❌ No |
 
 ### AI Model Configuration
 The application uses two different AI models:
@@ -133,7 +133,7 @@ The application uses two different AI models:
   "model": "gpt-4.1-mini",
   "temperature": 0,       // Deterministic selection
   "max_tokens": 50,       // Minimal response
-  "system": "French Literary Jury Expert"
+  "system": "English Literary Jury Expert"
 }
 ```
 

@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Vibe Quotes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="dashboard.css">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4f46e5">
+    
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%234f46e5'/%3E%3Ctext x='50' y='55' font-family='Arial' font-size='30' fill='white' text-anchor='middle'%3E💫%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <h1 class="dashboard-title">✨ Vibe Quotes</h1>
+                    <p class="dashboard-subtitle">Your Personal Quote Dashboard</p>
+                    <div class="header-date" id="header-date">Monday, 2 December 2024</div>
+                </div>
+                <div class="header-right">
+                    <button id="theme-toggle" class="theme-toggle" title="Toggle dark mode">
+                        <span class="theme-icon">🌙</span>
+                    </button>
+                    <select id="language-select" class="language-select">
+                        <option value="english" selected>English</option>
+                        <option value="french">Français</option>
+                        <option value="german">Deutsch</option>
+                        <option value="spanish">Español</option>
+                        <option value="portuguese">Português</option>
+                        <option value="italian">Italiano</option>
+                        <option value="slovak">Slovenčina</option>
+                    </select>
+                    <div id="user-menu" class="user-menu">
+                        <img id="user-avatar" class="user-avatar" src="" alt="User">
+                        <span id="user-name" class="user-name"></span>
+                        <div class="user-dropdown">
+                            <button id="sign-out-btn" class="dropdown-item">🚪 Sign Out</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="dashboard-main">
+            <!-- Loading State -->
+            <div id="dashboard-loader" class="dashboard-loader">
+                <div class="spinner"></div>
+                <p>Loading your dashboard...</p>
+            </div>
+
+            <!-- Welcome Message Section -->
+            <section id="welcome-message" class="welcome-message" style="display: none;">
+                <div class="welcome-card">
+                    <div class="welcome-content">
+                        <h2 id="welcome-title" class="welcome-title">Good morning, John! 🌅</h2>
+                        <p id="welcome-subtitle" class="welcome-subtitle">Ready to get inspired with some gratitude quotes?</p>
+                    </div>
+                    <div class="welcome-stats">
+                        <div class="mini-stat">
+                            <span class="mini-stat-number" id="welcome-quotes-count">13</span>
+                            <span class="mini-stat-label">Quotes</span>
+                        </div>
+                        <div class="mini-stat">
+                            <span class="mini-stat-number" id="welcome-streak">1</span>
+                            <span class="mini-stat-label">Day Streak</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- User Stats Section -->
+            <section id="user-stats" class="user-stats" style="display: none;">
+                <div class="stats-header">
+                    <h2>📊 Your Quote Journey</h2>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">📝</div>
+                        <div class="stat-content">
+                            <div class="stat-number" id="total-quotes">0</div>
+                            <div class="stat-label">Total Quotes</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🏆</div>
+                        <div class="stat-content">
+                            <div class="stat-number" id="favorite-vibe">-</div>
+                            <div class="stat-label">Favorite Vibe</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🔥</div>
+                        <div class="stat-content">
+                            <div class="stat-number" id="streak-days">0</div>
+                            <div class="stat-label">Day Streak</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Vibe Cards Section -->
+            <section id="vibe-section" class="vibe-section" style="display: none;">
+                <div class="section-header">
+                    <h2>🎭 Choose Your Vibe</h2>
+                    <p>Click on a vibe card to generate an inspiring quote</p>
+                </div>
+                
+                <div class="vibe-grid">
+                    <div class="vibe-card" data-vibe="gratitude">
+                        <div class="vibe-icon">🙏</div>
+                        <div class="vibe-content">
+                            <h3 class="vibe-title">Gratitude</h3>
+                            <p class="vibe-description">Appreciate life's blessings</p>
+                            <div class="vibe-stats">
+                                <span class="quote-count">0 quotes</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="vibe-card" data-vibe="resilience">
+                        <div class="vibe-icon">💪</div>
+                        <div class="vibe-content">
+                            <h3 class="vibe-title">Resilience</h3>
+                            <p class="vibe-description">Bounce back stronger</p>
+                            <div class="vibe-stats">
+                                <span class="quote-count">0 quotes</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="vibe-card" data-vibe="ambition">
+                        <div class="vibe-icon">🚀</div>
+                        <div class="vibe-content">
+                            <h3 class="vibe-title">Ambition</h3>
+                            <p class="vibe-description">Reach for the stars</p>
+                            <div class="vibe-stats">
+                                <span class="quote-count">0 quotes</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="vibe-card" data-vibe="creativity">
+                        <div class="vibe-icon">🎨</div>
+                        <div class="vibe-content">
+                            <h3 class="vibe-title">Creativity</h3>
+                            <p class="vibe-description">Unleash your imagination</p>
+                            <div class="vibe-stats">
+                                <span class="quote-count">0 quotes</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="vibe-card" data-vibe="serenity">
+                        <div class="vibe-icon">🧘</div>
+                        <div class="vibe-content">
+                            <h3 class="vibe-title">Serenity</h3>
+                            <p class="vibe-description">Find inner peace</p>
+                            <div class="vibe-stats">
+                                <span class="quote-count">0 quotes</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="vibe-card" data-vibe="courage">
+                        <div class="vibe-icon">⚡</div>
+                        <div class="vibe-content">
+                            <h3 class="vibe-title">Courage</h3>
+                            <p class="vibe-description">Face your fears</p>
+                            <div class="vibe-stats">
+                                <span class="quote-count">0 quotes</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="vibe-card" data-vibe="wisdom">
+                        <div class="vibe-icon">🦉</div>
+                        <div class="vibe-content">
+                            <h3 class="vibe-title">Wisdom</h3>
+                            <p class="vibe-description">Seek deeper understanding</p>
+                            <div class="vibe-stats">
+                                <span class="quote-count">0 quotes</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="vibe-card" data-vibe="joy">
+                        <div class="vibe-icon">😊</div>
+                        <div class="vibe-content">
+                            <h3 class="vibe-title">Joy</h3>
+                            <p class="vibe-description">Celebrate life's moments</p>
+                            <div class="vibe-stats">
+                                <span class="quote-count">0 quotes</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quote Display Section -->
+            <section id="quote-display" class="quote-display" style="display: none;">
+                <div class="quote-card">
+                    <div id="quote-loader" class="quote-loader">
+                        <div class="avatar-container">
+                            <div class="avatar" id="vibe-avatar">🤔</div>
+                            <div class="thinking-bubbles">
+                                <div class="bubble"></div>
+                                <div class="bubble"></div>
+                                <div class="bubble"></div>
+                            </div>
+                        </div>
+                        <div class="spinner"></div>
+                        <p class="loader-text" id="loader-text">Crafting your perfect quote...</p>
+                    </div>
+                    
+                    <div id="quote-content" class="quote-content" style="display: none;">
+                        <div class="quote-vibe-badge" id="quote-vibe-badge"></div>
+                        <blockquote id="generated-quote" class="generated-quote"></blockquote>
+                        <div class="quote-actions">
+                            <button id="copy-quote-btn" class="action-btn">
+                                📋 Copy Quote
+                            </button>
+                            <button id="read-quote-btn" class="action-btn">
+                                🔊 Read Aloud
+                            </button>
+                            <button id="generate-another-btn" class="action-btn primary">
+                                ✨ Generate Another
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recent Quotes Section -->
+            <section id="recent-quotes" class="recent-quotes" style="display: none;">
+                <div class="section-header">
+                    <h2>📜 Recent Quotes</h2>
+                    <div class="quotes-controls">
+                        <div class="date-filters">
+                            <input type="date" id="start-date" class="date-input" placeholder="Date début" autocomplete="off">
+                            <input type="date" id="end-date" class="date-input" placeholder="Date fin" autocomplete="off">
+                            <button id="filter-quotes-btn" class="filter-btn">🔍 Filter</button>
+                            <button id="clear-filter-btn" class="filter-btn secondary">✖️ Clear</button>
+                        </div>
+                        <button id="view-all-quotes" class="view-all-btn">View All</button>
+                    </div>
+                </div>
+                <div id="recent-quotes-list" class="recent-quotes-list">
+                    <!-- Recent quotes will be populated here -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html> 

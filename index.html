@@ -42,6 +42,25 @@
                         <option value="italian">Italiano</option>
                         <option value="slovak">Slovenčina</option>
                     </select>
+                    <!-- Authentication buttons -->
+                    <div id="auth-section" class="auth-section">
+                        <div id="guest-buttons" class="guest-buttons">
+                            <button id="login-btn" class="auth-btn login-btn">
+                                🔐 Login
+                            </button>
+                            <button id="signup-btn" class="auth-btn signup-btn">
+                                ✨ Sign Up
+                            </button>
+                        </div>
+                        <div id="user-menu" class="user-menu" style="display: none;">
+                            <div class="user-avatar">👤</div>
+                            <span id="user-name" class="user-name"></span>
+                            <div class="user-dropdown">
+                                <button id="view-dashboard" class="dropdown-item">📊 Dashboard</button>
+                                <button id="sign-out-btn" class="dropdown-item">🚪 Sign Out</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <p class="subtitle">Generate inspiring quotes that match your vibe</p>
@@ -102,6 +121,10 @@
                             <span class="feature-icon">🔊</span>
                             <span>Text-to-speech support</span>
                         </div>
+                        <div class="welcome-feature">
+                            <span class="feature-icon">💾</span>
+                            <span>Sign in to save your favorite quotes</span>
+                        </div>
                     </div>
                 </div>
                 <p id="quote-box" class="quote-box"></p>
@@ -147,6 +170,59 @@
         <footer class="footer">
             <p>Powered by AI • Built with ❤️</p>
         </footer>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Welcome Back!</h2>
+                <button id="close-login-modal" class="close-btn">&times;</button>
+            </div>
+            <form id="login-form" class="auth-form">
+                <div class="form-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" name="password" required>
+                </div>
+                <button type="submit" class="form-submit-btn">Login</button>
+                <div class="form-switch">
+                    <p>Don't have an account? <button type="button" id="switch-to-signup" class="switch-btn">Sign up</button></p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div id="signup-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Join Vibe Quotes!</h2>
+                <button id="close-signup-modal" class="close-btn">&times;</button>
+            </div>
+            <form id="signup-form" class="auth-form">
+                <div class="form-group">
+                    <label for="signup-name">Full Name</label>
+                    <input type="text" id="signup-name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-email">Email</label>
+                    <input type="email" id="signup-email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-password">Password</label>
+                    <input type="password" id="signup-password" name="password" required minlength="6">
+                    <small class="form-help">At least 6 characters</small>
+                </div>
+                <button type="submit" class="form-submit-btn">Sign Up</button>
+                <div class="form-switch">
+                    <p>Already have an account? <button type="button" id="switch-to-login" class="switch-btn">Login</button></p>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script src="script.js"></script>

@@ -3,6 +3,10 @@ class VibeQuotes {
     constructor() {
         console.log('VibeQuotes constructor called');
         
+        // Authentication state
+        this.user = null;
+        this.isAuthenticated = false;
+        
         // Initialize translations
         this.translations = {
             english: {
@@ -20,6 +24,7 @@ class VibeQuotes {
                 feature1: "8 unique vibes to choose from",
                 feature2: "Available in 7 languages", 
                 feature3: "Text-to-speech support",
+                feature4: "Sign in to save your favorite quotes",
                 historyBtn: "📜 Previous Quotes",
                 historyTitle: "Quote History",
                 historyEmpty1: "No quotes yet!",
@@ -51,6 +56,7 @@ class VibeQuotes {
                 feature1: "8 ambiances uniques au choix",
                 feature2: "Disponible en 7 langues",
                 feature3: "Support de synthèse vocale",
+                feature4: "Connectez-vous pour sauvegarder vos citations favorites",
                 historyBtn: "📜 Citations Précédentes",
                 historyTitle: "Historique des Citations",
                 historyEmpty1: "Aucune citation encore!",
@@ -249,6 +255,14 @@ class VibeQuotes {
         this.loaderText = document.getElementById('loader-text');
         this.welcomeMessage = document.getElementById('welcome-message');
         
+        // Authentication elements
+        this.guestButtons = document.getElementById('guest-buttons');
+        this.userMenu = document.getElementById('user-menu');
+        this.userAvatar = document.getElementById('user-avatar');
+        this.userName = document.getElementById('user-name');
+        this.viewDashboardBtn = document.getElementById('view-dashboard');
+        this.signOutBtn = document.getElementById('sign-out-btn');
+        
         // History elements
         this.historyToggle = document.getElementById('history-toggle');
         this.historyPanel = document.getElementById('history-panel');
@@ -284,12 +298,15 @@ class VibeQuotes {
         // Language management
         this.initLanguage();
         
+        // Authentication management
+        this.initAuthentication();
+        
         // History management
         this.quoteHistory = this.loadQuoteHistory();
         this.displayHistory();
         
-        // Set initial vibe from dropdown value
-        this.currentVibe = this.vibeSelect.value;
+        // Set initial vibe from dropdown value only if it exists
+        this.currentVibe = this.vibeSelect ? this.vibeSelect.value : '';
         
         // Check if user has generated quotes before and show welcome message if needed
         this.checkWelcomeStatus();
@@ -319,56 +336,195 @@ class VibeQuotes {
 
     bindEvents() {
         // Enable/disable generate button based on vibe selection
-        this.vibeSelect.addEventListener('change', (e) => {
-            this.currentVibe = e.target.value;
-            this.generateBtn.disabled = !this.currentVibe;
-            this.updateStats();
-            
-            // Show welcome message if no vibe is selected
-            if (!this.currentVibe) {
-                this.showWelcomeMessage();
-                this.quoteBox.classList.remove('show');
-                this.copyBtn.style.display = 'none';
-                this.readBtn.style.display = 'none';
-            }
-        });
+        if (this.vibeSelect) {
+            this.vibeSelect.addEventListener('change', (e) => {
+                this.currentVibe = e.target.value;
+                if (this.generateBtn) {
+                    this.generateBtn.disabled = !this.currentVibe;
+                }
+                this.updateStats();
+                
+                // Show welcome message if no vibe is selected
+                if (!this.currentVibe) {
+                    this.showWelcomeMessage();
+                    if (this.quoteBox) {
+                        this.quoteBox.classList.remove('show');
+                    }
+                    if (this.copyBtn) {
+                        this.copyBtn.style.display = 'none';
+                    }
+                    if (this.readBtn) {
+                        this.readBtn.style.display = 'none';
+                    }
+                }
+            });
+        }
 
         // Language selection
-        this.languageSelect.addEventListener('change', (e) => {
-            this.applyLanguage(e.target.value);
-        });
+        if (this.languageSelect) {
+            this.languageSelect.addEventListener('change', (e) => {
+                this.applyLanguage(e.target.value);
+            });
+        }
 
         // Generate quote button
-        this.generateBtn.addEventListener('click', () => {
-            if (!this.isRateLimited()) {
-                this.generateQuote();
-            }
-        });
+        if (this.generateBtn) {
+            this.generateBtn.addEventListener('click', () => {
+                if (!this.isRateLimited()) {
+                    this.generateQuote();
+                }
+            });
+        }
 
         // Copy quote button
-        this.copyBtn.addEventListener('click', () => {
-            this.copyQuote();
-        });
+        if (this.copyBtn) {
+            this.copyBtn.addEventListener('click', () => {
+                this.copyQuote();
+            });
+        }
 
         // Read quote button
-        this.readBtn.addEventListener('click', () => {
-            this.readQuoteAloud();
-        });
+        if (this.readBtn) {
+            this.readBtn.addEventListener('click', () => {
+                this.readQuoteAloud();
+            });
+        }
 
         // Theme toggle button
-        this.themeToggle.addEventListener('click', () => {
-            this.toggleTheme();
-        });
+        if (this.themeToggle) {
+            this.themeToggle.addEventListener('click', () => {
+                this.toggleTheme();
+            });
+        }
 
         // History toggle button
-        this.historyToggle.addEventListener('click', () => {
-            this.toggleHistory();
-        });
+        if (this.historyToggle) {
+            this.historyToggle.addEventListener('click', () => {
+                this.toggleHistory();
+            });
+        }
 
         // Clear history button
-        this.clearHistoryBtn.addEventListener('click', () => {
-            this.clearHistory();
+        if (this.clearHistoryBtn) {
+            this.clearHistoryBtn.addEventListener('click', () => {
+                this.clearHistory();
+            });
+        }
+
+        // Authentication event listeners
+        const loginBtn = document.getElementById('login-btn');
+        const signupBtn = document.getElementById('signup-btn');
+        
+        if (loginBtn) {
+            loginBtn.addEventListener('click', () => {
+                this.showLoginModal();
+            });
+        }
+        
+        if (signupBtn) {
+            signupBtn.addEventListener('click', () => {
+                this.showSignupModal();
+            });
+        }
+
+        // Modal close buttons
+        const closeLoginModal = document.getElementById('close-login-modal');
+        const closeSignupModal = document.getElementById('close-signup-modal');
+        
+        if (closeLoginModal) {
+            closeLoginModal.addEventListener('click', () => {
+                this.hideModal('login-modal');
+            });
+        }
+        
+        if (closeSignupModal) {
+            closeSignupModal.addEventListener('click', () => {
+                this.hideModal('signup-modal');
+            });
+        }
+
+        // Modal form switch buttons
+        const switchToSignup = document.getElementById('switch-to-signup');
+        const switchToLogin = document.getElementById('switch-to-login');
+        
+        if (switchToSignup) {
+            switchToSignup.addEventListener('click', () => {
+                this.hideModal('login-modal');
+                this.showSignupModal();
+            });
+        }
+        
+        if (switchToLogin) {
+            switchToLogin.addEventListener('click', () => {
+                this.hideModal('signup-modal');
+                this.showLoginModal();
+            });
+        }
+
+        // Form submissions
+        const loginForm = document.getElementById('login-form');
+        const signupForm = document.getElementById('signup-form');
+        
+        if (loginForm) {
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const email = formData.get('email');
+                const password = formData.get('password');
+                
+                const submitBtn = e.target.querySelector('button[type="submit"]');
+                const originalText = submitBtn.textContent;
+                submitBtn.textContent = 'Logging in...';
+                submitBtn.disabled = true;
+                
+                await this.handleLogin(email, password);
+                
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            });
+        }
+        
+        if (signupForm) {
+            signupForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const name = formData.get('name');
+                const email = formData.get('email');
+                const password = formData.get('password');
+                
+                const submitBtn = e.target.querySelector('button[type="submit"]');
+                const originalText = submitBtn.textContent;
+                submitBtn.textContent = 'Creating Account...';
+                submitBtn.disabled = true;
+                
+                await this.handleSignup(name, email, password);
+                
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            });
+        }
+
+        // Close modals when clicking outside
+        const modals = document.querySelectorAll('.modal');
+        modals.forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    this.hideModal(modal.id);
+                }
+            });
         });
+
+        if (this.viewDashboardBtn) {
+            this.viewDashboardBtn.addEventListener('click', () => {
+                window.location.href = '/dashboard.html';
+            });
+        }
+
+        if (this.signOutBtn) {
+            this.signOutBtn.addEventListener('click', () => {
+                this.signOut();
+            });
+        }
 
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
@@ -649,8 +805,7 @@ class VibeQuotes {
     }
 
     updateStats() {
-        if (!this.currentVibe) {
-            this.quoteCount.textContent = '';
+        if (!this.currentVibe || !this.quoteCount) {
             return;
         }
 
@@ -1351,6 +1506,11 @@ class VibeQuotes {
     }
 
     displayHistory() {
+        // Check if history elements exist (they don't on the main page)
+        if (!this.historyList) {
+            return;
+        }
+        
         if (this.quoteHistory.length === 0) {
             this.historyList.innerHTML = `
                 <div class="history-empty">
@@ -1447,6 +1607,11 @@ class VibeQuotes {
     }
 
     toggleHistory() {
+        // Check if history elements exist
+        if (!this.historyPanel || !this.historyToggle) {
+            return;
+        }
+        
         this.isHistoryVisible = !this.isHistoryVisible;
         
         if (this.isHistoryVisible) {
@@ -1482,12 +1647,18 @@ class VibeQuotes {
                 this.hasGeneratedQuote = false;
                 this.showWelcomeMessage();
                 
-                // Hide quote display elements
-                this.quoteBox.classList.remove('show');
-                this.copyBtn.classList.remove('show');
-                this.readBtn.classList.remove('show');
-                this.copyBtn.style.display = 'none';
-                this.readBtn.style.display = 'none';
+                // Hide quote display elements only if they exist
+                if (this.quoteBox) {
+                    this.quoteBox.classList.remove('show');
+                }
+                if (this.copyBtn) {
+                    this.copyBtn.classList.remove('show');
+                    this.copyBtn.style.display = 'none';
+                }
+                if (this.readBtn) {
+                    this.readBtn.classList.remove('show');
+                    this.readBtn.style.display = 'none';
+                }
             }
         }
     }
@@ -1606,6 +1777,177 @@ class VibeQuotes {
             }, 500); // Wait for animation to complete
         }
     }
+
+    // Authentication Methods
+    async initAuthentication() {
+        try {
+            // Check if user is already authenticated
+            const response = await fetch('/.netlify/functions/auth-user', {
+                credentials: 'include'
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                if (data.authenticated) {
+                    // Only redirect if we're on the main page and user is authenticated
+                    if (window.location.pathname === '/' || window.location.pathname === '/index.html') {
+                        console.log('User already authenticated, redirecting to dashboard');
+                        window.location.href = '/dashboard.html';
+                        return;
+                    } else {
+                        // We're on the dashboard, update the UI
+                        this.updateAuthenticationState(data.user);
+                    }
+                } else {
+                    this.showAuthButtons();
+                }
+            } else {
+                this.showAuthButtons();
+            }
+        } catch (error) {
+            console.error('Authentication check failed:', error);
+            this.showAuthButtons();
+        }
+    }
+
+    updateAuthenticationState(user) {
+        this.user = user;
+        this.isAuthenticated = true;
+        
+        // Update UI to show user info
+        if (this.userName) this.userName.textContent = user.name;
+        
+        // Show user menu, hide auth buttons
+        if (this.userMenu) this.userMenu.style.display = 'flex';
+        if (this.guestButtons) this.guestButtons.style.display = 'none';
+        
+        console.log('User authenticated:', user.name);
+    }
+
+    showAuthButtons() {
+        this.user = null;
+        this.isAuthenticated = false;
+        
+        // Show auth buttons, hide user menu
+        if (this.guestButtons) this.guestButtons.style.display = 'flex';
+        if (this.userMenu) this.userMenu.style.display = 'none';
+    }
+
+    // Modal Methods
+    showLoginModal() {
+        const modal = document.getElementById('login-modal');
+        if (modal) {
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('active'), 10);
+        }
+    }
+
+    showSignupModal() {
+        const modal = document.getElementById('signup-modal');
+        if (modal) {
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('active'), 10);
+        }
+    }
+
+    hideModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.remove('active');
+            setTimeout(() => modal.style.display = 'none', 300);
+        }
+    }
+
+    // Authentication API calls
+    async handleLogin(email, password) {
+        try {
+            const response = await fetch('/.netlify/functions/auth-login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({ email, password })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                this.updateAuthenticationState(data.user);
+                this.hideModal('login-modal');
+                this.showMessage('Welcome back! Redirecting to dashboard...', 'success');
+                
+                // Redirect to dashboard after successful login
+                setTimeout(() => {
+                    window.location.href = '/dashboard.html';
+                }, 1000);
+                
+                return true;
+            } else {
+                this.showMessage(data.error || 'Login failed', 'error');
+                return false;
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            this.showMessage('Login failed. Please try again.', 'error');
+            return false;
+        }
+    }
+
+    async handleSignup(name, email, password) {
+        try {
+            const response = await fetch('/.netlify/functions/auth-signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({ name, email, password })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                this.updateAuthenticationState(data.user);
+                this.hideModal('signup-modal');
+                this.showMessage('Welcome to Vibe Quotes! Redirecting to dashboard...', 'success');
+                
+                // Redirect to dashboard after successful signup
+                setTimeout(() => {
+                    window.location.href = '/dashboard.html';
+                }, 1000);
+                
+                return true;
+            } else {
+                this.showMessage(data.error || 'Signup failed', 'error');
+                return false;
+            }
+        } catch (error) {
+            console.error('Signup error:', error);
+            this.showMessage('Signup failed. Please try again.', 'error');
+            return false;
+        }
+    }
+
+    async signOut() {
+        try {
+            const response = await fetch('/.netlify/functions/auth-logout', {
+                method: 'GET',
+                credentials: 'include'
+            });
+            
+            // Update UI regardless of response
+            this.showAuthButtons();
+            this.showMessage('Signed out successfully', 'success');
+            
+            // Optionally reload the page to reset state
+            setTimeout(() => window.location.reload(), 1000);
+        } catch (error) {
+            console.error('Sign out error:', error);
+            // Still update UI on error
+            this.showAuthButtons();
+        }
+    }
 }
 
 // Initialize the application when DOM is loaded
@@ -1674,6 +2016,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Service Worker registration for offline functionality (optional)
+// Temporarily disabled during development to prevent caching issues
+/*
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('/sw.js')
@@ -1684,4 +2028,5 @@ if ('serviceWorker' in navigator) {
                 console.log('SW registration failed: ', registrationError);
             });
     });
-} 
+}
+*/ 
