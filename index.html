@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibe Quotes - Get Inspired</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-top">
+                <h1 class="title">✨ Vibe Quotes</h1>
+                <div class="header-controls">
+                    <button id="theme-toggle" class="theme-toggle" title="Toggle dark mode">
+                        <span class="theme-icon">🌙</span>
+                    </button>
+                    <select id="language-select" class="language-select">
+                        <option value="english" selected>English</option>
+                        <option value="french">Français</option>
+                        <option value="german">Deutsch</option>
+                        <option value="spanish">Español</option>
+                        <option value="portuguese">Português</option>
+                        <option value="italian">Italiano</option>
+                        <option value="slovak">Slovenčina</option>
+                    </select>
+                </div>
+            </div>
+            <p class="subtitle">Generate inspiring quotes that match your vibe</p>
+        </header>
+
+        <main class="main">
+            <div class="controls">
+                <div class="input-group">
+                    <label for="vibe-select" class="label">Choose your vibe:</label>
+                    <select id="vibe-select" class="select">
+                        <option value="">Select a vibe...</option>
+                        <option value="gratitude">🙏 Gratitude</option>
+                        <option value="resilience">💪 Resilience</option>
+                        <option value="ambition">🚀 Ambition</option>
+                        <option value="creativity">🎨 Creativity</option>
+                        <option value="serenity">🧘 Serenity</option>
+                        <option value="courage">⚡ Courage</option>
+                        <option value="wisdom">🦉 Wisdom</option>
+                        <option value="joy">😊 Joy</option>
+                    </select>
+                </div>
+                <button id="generate-btn" class="generate-btn" disabled>
+                    Generate Quote
+                </button>
+            </div>
+
+            <div id="loader" class="loader">
+                <div class="avatar-container">
+                    <div class="avatar" id="vibe-avatar">🤔</div>
+                    <div class="thinking-bubbles">
+                        <div class="bubble"></div>
+                        <div class="bubble"></div>
+                        <div class="bubble"></div>
+                    </div>
+                </div>
+                <div class="spinner"></div>
+                <p class="loader-text" id="loader-text">Crafting your perfect quote...</p>
+            </div>
+
+            <div class="quote-container">
+                <p id="quote-box" class="quote-box"></p>
+                <div class="quote-actions">
+                    <button id="copy-btn" class="copy-btn" style="display: none;">
+                        📋 Copy Quote
+                    </button>
+                    <button id="read-btn" class="read-btn" style="display: none;">
+                        🔊 Read Aloud
+                    </button>
+                </div>
+            </div>
+
+            <div class="stats">
+                <p id="quote-count" class="quote-count"></p>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>Powered by AI • Built with ❤️</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 

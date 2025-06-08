@@ -1,0 +1,34 @@
+{
+  "name": "vibe-quotes",
+  "version": "1.0.0",
+  "description": "Generate inspiring quotes that match your vibe using AI",
+  "main": "index.html",
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "echo 'No build step required for vanilla HTML/CSS/JS'",
+    "deploy": "netlify deploy --prod"
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.12"
+  },
+  "devDependencies": {
+    "netlify-cli": "^15.0.0"
+  },
+  "keywords": [
+    "quotes",
+    "inspiration",
+    "ai",
+    "openai",
+    "netlify",
+    "vanilla-js"
+  ],
+  "author": "Vibe Quotes",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/vibe-quotes.git"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+} 
