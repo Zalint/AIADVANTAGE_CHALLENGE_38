@@ -58,8 +58,8 @@ Choose from carefully curated emotional themes:
 
 ### 1. Clone Repository
 ```bash
-git clone https://github.com/yourusername/vibe-quotes.git
-cd vibe-quotes
+git clone https://github.com/Zalint/AIADVANTAGE_CHALLENGE_38.git
+cd AIADVANTAGE_CHALLENGE_38
 ```
 
 ### 2. Install Dependencies
@@ -432,6 +432,6 @@ MIT License - Feel free to use this project for any purpose.
 
 ### 🔗 Quick Links
 - [Live Demo](https://your-app-name.netlify.app)
-- [GitHub Repository](https://github.com/yourusername/vibe-quotes)
+- [GitHub Repository](https://github.com/Zalint/AIADVANTAGE_CHALLENGE_38)
 - [OpenAI API Documentation](https://platform.openai.com/docs)
 - [Netlify Functions Guide](https://docs.netlify.com/functions/overview/) 
