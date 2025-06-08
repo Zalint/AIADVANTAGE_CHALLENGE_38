@@ -3,11 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vibe Quotes - Get Inspired</title>
+    <title>Vibe Quotes - AI Inspirational Quote Generator</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="VibeQuotes">
+    
+    <!-- Meta tags for better SEO and sharing -->
+    <meta name="description" content="AI-powered inspirational quotes personalized to your vibe with multi-language support and text-to-speech">
+    <meta property="og:title" content="Vibe Quotes - AI Inspirational Quote Generator">
+    <meta property="og:description" content="Get personalized inspirational quotes powered by AI in 7 languages">
+    <meta property="og:type" content="website">
+    
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%234f46e5'/%3E%3Ctext x='50' y='55' font-family='Arial' font-size='30' fill='white' text-anchor='middle'%3E💫%3C/text%3E%3C/svg%3E">
 </head>
 <body>
     <div class="container">
@@ -67,6 +82,28 @@
             </div>
 
             <div class="quote-container">
+                <div id="welcome-message" class="welcome-message">
+                    <div class="welcome-icon">✨</div>
+                    <h2 class="welcome-title">Welcome to Vibe Quotes!</h2>
+                    <p class="welcome-text">
+                        Choose your vibe above and generate your first inspiring quote. 
+                        Our AI will create personalized quotes that match your mood and energy.
+                    </p>
+                    <div class="welcome-features">
+                        <div class="welcome-feature">
+                            <span class="feature-icon">🎯</span>
+                            <span>8 unique vibes to choose from</span>
+                        </div>
+                        <div class="welcome-feature">
+                            <span class="feature-icon">🌍</span>
+                            <span>Available in 7 languages</span>
+                        </div>
+                        <div class="welcome-feature">
+                            <span class="feature-icon">🔊</span>
+                            <span>Text-to-speech support</span>
+                        </div>
+                    </div>
+                </div>
                 <p id="quote-box" class="quote-box"></p>
                 <div class="quote-actions">
                     <button id="copy-btn" class="copy-btn" style="display: none;">
@@ -81,7 +118,31 @@
             <div class="stats">
                 <p id="quote-count" class="quote-count"></p>
             </div>
+
+            <!-- History Toggle Button - At the bottom -->
+            <div class="history-toggle-container">
+                <button id="history-toggle" class="history-toggle-btn" title="Toggle Quote History">
+                    <span class="history-text">📜 Previous Quotes</span>
+                    <span class="history-arrow">▶</span>
+                </button>
+            </div>
         </main>
+
+        <!-- History Panel -->
+        <div id="history-panel" class="history-panel">
+            <div class="history-header">
+                <h3>Quote History</h3>
+                <button id="clear-history" class="clear-history-btn" title="Clear History">🗑️</button>
+            </div>
+            <div class="history-content">
+                <div id="history-list" class="history-list">
+                    <div class="history-empty">
+                        <p>No quotes yet!</p>
+                        <p>Generate your first quote to see it here.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <footer class="footer">
             <p>Powered by AI • Built with ❤️</p>

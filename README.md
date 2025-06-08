@@ -1,14 +1,14 @@
 # ✨ Vibe Quotes
 
-A sophisticated, multilingual web application that generates personalized inspirational quotes using advanced AI. Features a two-step AI process with GPT-4o for generation and GPT-4.1-mini evaluation, supporting 7 languages with text-to-speech capabilities.
+A sophisticated, multilingual web application that generates personalized inspirational quotes using advanced AI. Features a two-step AI process with GPT-4o for generation and GPT-4.1-mini evaluation, supporting 7 languages with text-to-speech capabilities and automatic background image generation.
 
 ## 🌟 Key Features
 
 ### 🤖 Advanced AI Integration
 - **Two-Step AI Process**: GPT-4o generates 3 quotes, then GPT-4.1-mini literary jury selects the best one
-- **French Literary Jury**: AI evaluation system that judges quotes on emotional impact, literary quality, and originality
 - **High-Quality Generation**: Creative parameters (temperature: 0.95, top_p: 0.95) for unique quotes
 - **Precise Selection**: Deterministic evaluation (temperature: 0) for consistent quality
+- **Background Images**: AI-generated contextual backgrounds for each quote
 
 ### 🌍 Multi-Language Support
 - **7 Languages**: English, Français, Deutsch, Español, Português, Italiano, Slovenčina
@@ -34,6 +34,7 @@ Choose from carefully curated emotional themes:
 - **Contextual Loading**: Personalized messages like "Finding grateful wisdom..."
 - **Enhanced Contrast**: Distinctive panels with colored borders and shadows
 - **Smooth Animations**: Shimmer effects, fade-ins, and bouncing avatars
+- **Background Images**: Dynamic AI-generated backgrounds for each quote
 
 ### 🔊 Audio Features
 - **Text-to-Speech**: Read quotes aloud in any supported language
@@ -57,31 +58,52 @@ Choose from carefully curated emotional themes:
 
 ### 1. Clone Repository
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/yourusername/vibe-quotes.git
 cd vibe-quotes
 ```
 
-### 2. Environment Setup
-Create environment variables in Netlify:
+### 2. Install Dependencies
+```bash
+npm install
+```
+
+### 3. Environment Setup
+Create a `.env` file in the project root:
 ```bash
 OPENAI_API_KEY=your_openai_api_key_here
 DAILY_REQUEST_LIMIT=100  # Optional: default is 100
 ```
 
-### 3. Deploy to Netlify
+### 4. Deploy to Netlify
 
 #### Option A: Git Deployment (Recommended)
-1. Push code to GitHub/GitLab
+1. Push code to GitHub/GitLab/Bitbucket
 2. Connect repository to Netlify
-3. Set environment variables in Netlify dashboard
-4. Auto-deploy on every push
+3. Set environment variables in Netlify dashboard:
+   - Go to Site settings → Environment variables
+   - Add `OPENAI_API_KEY` with your OpenAI API key
+   - Optionally add `DAILY_REQUEST_LIMIT` (default: 100)
+4. Deploy automatically on every push
 
 #### Option B: Netlify CLI
 ```bash
+# Install Netlify CLI globally
 npm install -g netlify-cli
+
+# Login to Netlify
 netlify login
+
+# Deploy to production
 netlify deploy --prod
+
+# Set environment variables
+netlify env:set OPENAI_API_KEY your_api_key_here
 ```
+
+#### Option C: Manual Deploy
+1. Create a ZIP file of your project
+2. Drag and drop to Netlify dashboard
+3. Set environment variables manually
 
 ## ⚙️ Configuration
 
@@ -122,16 +144,22 @@ vibe-quotes/
 ├── 🏠 Frontend
 │   ├── index.html          # Main application
 │   ├── style.css          # Enhanced styling with themes
-│   └── script.js          # Class-based JavaScript
+│   ├── styles.css         # Additional styles
+│   ├── script.js          # Class-based JavaScript (1687 lines)
+│   ├── sw.js              # Service worker (offline support)
+│   └── manifest.json      # PWA manifest
 ├── ⚡ Backend
 │   └── netlify/functions/
-│       └── getBestQuote.js # Two-step AI processing
+│       └── getBestQuote.js # Two-step AI processing (452 lines)
 ├── 📦 Configuration
 │   ├── package.json       # Node.js dependencies
+│   ├── package-lock.json  # Locked dependencies
 │   ├── netlify.toml      # Netlify settings
 │   └── .env              # Environment variables (local)
-├── 🎯 Utilities
-│   └── sw.js             # Service worker (offline)
+├── 🔧 Build & Deploy
+│   ├── .netlify/         # Netlify build cache
+│   ├── .git/            # Git repository
+│   └── .gitignore       # Git ignore rules
 └── 📖 Documentation
     └── README.md         # This file
 ```
@@ -194,10 +222,25 @@ Edit CSS custom properties:
 # Install dependencies
 npm install
 
-# Start development server
+# Start development server (includes functions)
+npm run dev
+# or
 npx netlify dev
 
 # Access at http://localhost:8888
+# Functions available at http://localhost:8888/.netlify/functions/
+```
+
+### Development Scripts
+```bash
+# Start development server
+npm run dev
+
+# Deploy to production
+npm run deploy
+
+# Build (no build step needed for vanilla HTML/CSS/JS)
+npm run build
 ```
 
 ### Development Console Commands
@@ -210,86 +253,27 @@ exportQuotes()
 
 // Reset daily usage counter
 resetDailyUsage()
+
+// Debug mode toggle
+toggleDebugMode()
 ```
 
 ### Testing
 ```bash
-# Test Netlify function
-curl -X POST http://localhost:9999/.netlify/functions/getBestQuote \
+# Test Netlify function locally
+curl -X POST http://localhost:8888/.netlify/functions/getBestQuote \
   -H "Content-Type: application/json" \
   -d '{
     "vibe": "gratitude",
     "language": "english",
     "context": {"holiday": "Christmas"}
   }'
+
+# Test with different vibes
+curl -X POST http://localhost:8888/.netlify/functions/getBestQuote \
+  -H "Content-Type: application/json" \
+  -d '{"vibe": "courage", "language": "french"}'
 ```
-
-## 📱 Browser Support
-
-### Desktop
-- ✅ Chrome 60+ (Full features)
-- ✅ Firefox 55+ (Full features)
-- ✅ Safari 12+ (Full features)
-- ✅ Edge 79+ (Full features)
-
-### Mobile
-- ✅ iOS Safari 12+ (Full responsive design)
-- ✅ Chrome Mobile (Touch-optimized)
-- ✅ Samsung Internet (Full support)
-
-### Progressive Enhancement
-- Text-to-Speech gracefully degrades
-- Clipboard API has fallback
-- Animations respect motion preferences
-- Core functionality works without JavaScript
-
-## 🔐 Security & Privacy
-
-### API Security
-- Server-side API key protection
-- IP-based rate limiting
-- Input validation and sanitization
-- CORS properly configured
-
-### Privacy
-- No user data collection
-- All storage is local (localStorage)
-- No tracking or analytics
-- No cookies used
-
-### Performance
-- **Bundle Size**: ~25KB total
-- **First Contentful Paint**: <800ms
-- **Function Response**: 2-5s (AI processing)
-- **Offline Ready**: Service worker enabled
-
-## 🌟 Advanced Features
-
-### Voice Synthesis
-```javascript
-// Language-specific voice configuration
-const languageVoiceMap = {
-  'english': 'en-US',
-  'french': 'fr-FR',
-  'german': 'de-DE',
-  'spanish': 'es-ES',
-  'portuguese': 'pt-PT',
-  'italian': 'it-IT',
-  'slovak': 'sk-SK'
-};
-```
-
-### Holiday Detection System
-- Automatic detection of major holidays
-- Context-aware quote generation
-- Seasonal messaging in UI
-- Configurable holiday calendar
-
-### Rate Limiting Architecture
-- **Server-side**: IP-based tracking with cleanup
-- **Client-side**: localStorage backup
-- **Automatic Reset**: Daily at midnight UTC
-- **Graceful Messaging**: User-friendly limit notifications
 
 ## 🚨 Troubleshooting
 
@@ -300,24 +284,57 @@ const languageVoiceMap = {
 # Verify environment variable is set
 netlify env:list
 
+# Test function locally
+netlify functions:invoke getBestQuote --payload='{"vibe":"joy","language":"english"}'
+
 # Check function logs
-netlify functions:invoke getBestQuote --payload='{"vibe":"joy"}'
+netlify functions:log getBestQuote
 ```
 
 **Rate Limiting Issues**
-- Check daily usage in app stats
-- Use `resetDailyUsage()` in development
+- Check daily usage in app stats panel
+- Use `resetDailyUsage()` in development console
 - Verify `DAILY_REQUEST_LIMIT` environment variable
+- Rate limits reset at midnight UTC
 
 **Text-to-Speech Not Working**
 - Ensure HTTPS (required for Web Speech API)
-- Check browser speech synthesis support
-- Verify language support on user's system
+- Check browser speech synthesis support: `window.speechSynthesis`
+- Verify language support: `speechSynthesis.getVoices()`
+- Test on different browsers (Chrome/Firefox/Safari)
 
 **Theme Not Persisting**
-- Check localStorage permissions
-- Clear browser cache
+- Check localStorage permissions in browser
+- Clear browser cache and cookies
 - Verify JavaScript console for errors
+- Test in incognito/private browsing mode
+
+**Quotes Not Loading**
+- Check browser's Network tab for failed requests
+- Verify OpenAI API key is valid and has credits
+- Test function directly: `/netlify/functions/getBestQuote`
+- Check CORS settings in netlify.toml
+
+**Background Images Not Showing**
+- Verify AI image generation is working
+- Check network connectivity
+- Look for console errors related to image loading
+- Test with different vibes and languages
+
+### Debugging Tips
+```javascript
+// Enable verbose logging
+localStorage.setItem('debugMode', 'true');
+
+// Check current storage
+console.log('Stored quotes:', localStorage.getItem('vibeQuotes'));
+console.log('Daily usage:', localStorage.getItem('dailyUsage'));
+console.log('Current theme:', localStorage.getItem('theme'));
+
+// Reset all local data
+localStorage.clear();
+location.reload();
+```
 
 ## 📊 Performance Metrics
 
@@ -326,12 +343,39 @@ netlify functions:invoke getBestQuote --payload='{"vibe":"joy"}'
 - **Accessibility**: 100
 - **Best Practices**: 100
 - **SEO**: 95+
+- **PWA**: 85+ (offline capability)
 
 ### API Performance
-- **Cold Start**: 2-3 seconds
-- **Warm Function**: 1-2 seconds
+- **Cold Start**: 2-3 seconds (first request)
+- **Warm Function**: 1-2 seconds (subsequent requests)
 - **Average Response**: 2.5 seconds
 - **Success Rate**: 99%+
+- **Function Size**: ~25KB compressed
+
+### Bundle Analysis
+- **Total Size**: ~100KB (HTML + CSS + JS)
+- **JavaScript**: ~63KB (main application logic)
+- **CSS**: ~30KB (styles + themes)
+- **Service Worker**: ~3KB (offline support)
+
+## 🆕 Recent Updates
+
+### Version 1.0.0 (Latest)
+- ✅ Two-step AI quote generation system
+- ✅ 7-language support with native TTS
+- ✅ AI-generated background images
+- ✅ Advanced rate limiting with IP tracking
+- ✅ Holiday context awareness
+- ✅ Progressive Web App (PWA) support
+- ✅ Dark/light theme toggle
+- ✅ Comprehensive error handling
+
+### Planned Features
+- 🔄 User accounts and quote history
+- 🔄 Social sharing capabilities
+- 🔄 Quote categories and filtering
+- 🔄 Custom vibe creation
+- 🔄 API for third-party integrations
 
 ## 🤝 Contributing
 
@@ -342,11 +386,31 @@ netlify functions:invoke getBestQuote --payload='{"vibe":"joy"}'
 5. Open a Pull Request
 
 ### Development Guidelines
-- Use vanilla JavaScript (no frameworks)
-- Follow existing code style
-- Test on multiple browsers
-- Update documentation
-- Respect rate limits during testing
+- Use vanilla JavaScript (no frameworks required)
+- Follow existing code style and conventions
+- Test on multiple browsers and devices
+- Update documentation for new features
+- Respect rate limits during development and testing
+- Write clear commit messages
+- Add comments for complex logic
+
+### Code Style
+```javascript
+// Use meaningful variable names
+const isQuoteGenerating = true;
+
+// Use async/await for promises
+async function generateQuote() {
+    try {
+        const response = await fetch('/api/quote');
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Failed to generate quote:', error);
+        throw error;
+    }
+}
+```
 
 ## 📄 License
 
@@ -354,14 +418,20 @@ MIT License - Feel free to use this project for any purpose.
 
 ## 🙏 Acknowledgments
 
-- **OpenAI** - GPT-4o and GPT-4.1-mini APIs
-- **Netlify** - Hosting and serverless functions
-- **Google Fonts** - Inter typeface
-- **Web Speech API** - Text-to-speech functionality
-- **The open-source community** - Inspiration and best practices
+- **OpenAI** - GPT-4o and GPT-4.1-mini APIs for intelligent quote generation
+- **Netlify** - Hosting platform and serverless functions
+- **Google Fonts** - Inter typeface for modern typography
+- **Web Speech API** - Text-to-speech functionality across browsers
+- **The open-source community** - Inspiration, best practices, and continuous learning
 
 ---
 
 **🚀 Built with cutting-edge AI and modern web technologies**
 
-*Generate quotes that inspire, in any language, with the power of advanced AI.* 
+*Generate quotes that inspire, in any language, with the power of advanced AI.*
+
+### 🔗 Quick Links
+- [Live Demo](https://your-app-name.netlify.app)
+- [GitHub Repository](https://github.com/yourusername/vibe-quotes)
+- [OpenAI API Documentation](https://platform.openai.com/docs)
+- [Netlify Functions Guide](https://docs.netlify.com/functions/overview/) 

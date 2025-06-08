@@ -36,6 +36,11 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
+    // Skip caching script.js during development on localhost
+    if (event.request.url.includes('localhost') && event.request.url.includes('script.js')) {
+        return;
+    }
+
     event.respondWith(
         caches.match(event.request)
             .then((response) => {

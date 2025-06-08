@@ -97,22 +97,24 @@ exports.handler = async (event, context) => {
         const bestQuote = await selectBestQuote(apiKey, vibe, language, quotes, context);
         console.log(`Selected best quote:`, bestQuote);
 
+        // Generate background image for the best quote
+        const backgroundImage = await generateQuoteImage(bestQuote, vibe, language);
+
         // Return the result
         return {
             statusCode: 200,
-            headers,
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
             body: JSON.stringify({
                 quote: bestQuote,
-                vibe: vibe,
-                language: language,
+                author: `AI Generated for ${vibe}`,
+                vibe,
                 context: context,
-                timestamp: Date.now(),
-                success: true,
-                usage: {
-                    daily: rateLimitResult.usage + 1,
-                    limit: DAILY_REQUEST_LIMIT,
-                    remaining: DAILY_REQUEST_LIMIT - (rateLimitResult.usage + 1)
-                }
+                requestsRemaining: DAILY_REQUEST_LIMIT - (rateLimitResult.usage + 1),
+                backgroundImage: backgroundImage,
+                timestamp: new Date().toISOString()
             })
         };
 
@@ -420,4 +422,31 @@ function isValidVibe(vibe) {
     ];
     
     return validVibes.includes(vibe.toLowerCase());
-} 
+}
+
+// Add after the existing imports
+const generateQuoteImage = async (quote, vibe, language) => {
+    try {
+        // For now, use Picsum (Lorem Picsum) which doesn't require API keys
+        // Generate a consistent image based on the vibe for better UX
+        const vibeSeeds = {
+            'gratitude': 1001,
+            'resilience': 1002, 
+            'ambition': 1003,
+            'creativity': 1004,
+            'serenity': 1005,
+            'courage': 1006,
+            'wisdom': 1007,
+            'joy': 1008
+        };
+        
+        const seed = vibeSeeds[vibe] || 1000;
+        const imageUrl = `https://picsum.photos/seed/${seed}/800/400`;
+        
+        console.log(`Generated background image for ${vibe}: ${imageUrl}`);
+        return imageUrl;
+    } catch (error) {
+        console.error('Image generation failed:', error);
+        return null;
+    }
+}; 
