@@ -749,6 +749,15 @@ class DashboardApp {
             
             console.log('📥 Response received from backend:', data);
             
+            // Log the response details to show source (OpenAI vs Database)
+            if (data.usedFallback) {
+                console.log('💾 Quote source: DATABASE FALLBACK');
+                console.log('📊 DB stored quotes used due to AI service unavailability');
+            } else {
+                console.log('🤖 Quote source: OPENAI DIRECT');
+                console.log('✨ Fresh AI-generated quote received');
+            }
+            
             if (data.error) {
                 throw new Error(data.message || data.error);
             }
@@ -798,8 +807,20 @@ class DashboardApp {
         document.getElementById('quote-content').style.display = 'flex';
         
         // Update quote content
-        document.getElementById('quote-vibe-badge').textContent = data.vibe.charAt(0).toUpperCase() + data.vibe.slice(1);
-        document.getElementById('generated-quote').textContent = data.quote;
+        const viBadge = document.getElementById('quote-vibe-badge');
+        const quoteText = document.getElementById('generated-quote');
+        
+        // Show if this is a fallback quote
+        if (data.usedFallback) {
+            viBadge.textContent = `${data.vibe.charAt(0).toUpperCase() + data.vibe.slice(1)} (Stored)`;
+            viBadge.style.backgroundColor = '#f59e0b'; // Orange color for fallback
+            console.log('📊 Displaying stored quote from database due to AI service unavailability');
+        } else {
+            viBadge.textContent = data.vibe.charAt(0).toUpperCase() + data.vibe.slice(1);
+            viBadge.style.backgroundColor = ''; // Reset to default
+        }
+        
+        quoteText.textContent = data.quote;
         
         // Store the current quote for copying and reading
         this.currentQuote = data.quote;

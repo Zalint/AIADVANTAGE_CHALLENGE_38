@@ -606,6 +606,10 @@ class VibeQuotes {
                     holiday: this.userContext.holiday
                 }
             };
+            
+            console.log('🚀 Starting quote generation for vibe:', this.currentVibe);
+            console.log('📤 Context being sent to backend:', JSON.stringify(requestBody.context, null, 2));
+            console.log('📡 Full request body:', JSON.stringify(requestBody, null, 2));
 
             const response = await fetch('/.netlify/functions/getBestQuote', {
                 method: 'POST',
@@ -620,6 +624,18 @@ class VibeQuotes {
             }
 
             const data = await response.json();
+            
+            // Log the response details to show source (OpenAI vs Database)
+            console.log('📥 Response received from backend:', data);
+            
+            // Check if this is a fallback quote from database
+            if (data.usedFallback) {
+                console.log('💾 Quote source: DATABASE FALLBACK');
+                console.log('📊 DB stored quotes used due to AI service unavailability');
+            } else {
+                console.log('🤖 Quote source: OPENAI DIRECT');
+                console.log('✨ Fresh AI-generated quote received');
+            }
             
             if (data.error) {
                 // Handle rate limiting specifically

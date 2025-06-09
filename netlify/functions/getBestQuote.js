@@ -3,7 +3,7 @@
 
 const fetch = require('node-fetch');
 const { authenticateUser } = require('./utils/auth');
-const { saveUserQuote } = require('./utils/database');
+const { saveUserQuote, query } = require('./utils/database');
 
 // OpenAI API configuration
 const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
@@ -57,6 +57,13 @@ exports.handler = async (event, context) => {
             body: JSON.stringify({ error: 'OpenAI API key not configured' })
         };
     }
+    
+    console.log('🔑 API Key status:');
+    console.log('  - Key present:', !!apiKey);
+    console.log('  - Key length:', apiKey ? apiKey.length : 0);
+    console.log('  - Key prefix:', apiKey ? apiKey.substring(0, 7) + '...' : 'N/A');
+    console.log('  - Environment:', process.env.NODE_ENV || 'development');
+    console.log('  - Function name:', context.functionName || 'getBestQuote');
 
     try {
         // Parse request body
@@ -123,17 +130,53 @@ exports.handler = async (event, context) => {
         const numQuotes = 3;
         let quotes;
         let bestQuote;
+        let usedFallback = false;
+        
+        const startTime = Date.now();
+        console.log(`⏱️ Starting AI quote generation at ${new Date().toISOString()}`);
         
         try {
             quotes = await generateQuotes(apiKey, vibe, language, context, numQuotes);
+            const generationTime = Date.now() - startTime;
+            console.log(`⏱️ Quote generation completed in ${generationTime}ms`);
             console.log(`Generated ${numQuotes} quotes:`, quotes);
 
             // Step 2: Select the best quote
+            const selectionStartTime = Date.now();
             bestQuote = await selectBestQuote(apiKey, vibe, language, quotes, context);
+            const selectionTime = Date.now() - selectionStartTime;
+            const totalTime = Date.now() - startTime;
+            
+            console.log(`⏱️ Quote selection completed in ${selectionTime}ms`);
+            console.log(`⏱️ Total AI processing time: ${totalTime}ms`);
             console.log(`Selected best quote:`, bestQuote);
         } catch (error) {
-            console.error('Error with quote generation:', error);
-            throw error;
+            console.error('❌ Error with AI quote generation:', error);
+            
+            // Check if it's a 502 error or other API failure
+            if (error.message.includes('502') || error.message.includes('Bad Gateway') || 
+                error.message.includes('OpenAI API error') || error.message.includes('timeout') ||
+                error.message.includes('ECONNRESET') || error.message.includes('ETIMEDOUT') ||
+                error.message.includes('fetch failed') || error.code === 'ECONNREFUSED') {
+                
+                console.log('🔄 AI service unavailable, attempting database fallback...');
+                
+                try {
+                    bestQuote = await getFallbackQuoteFromDB(vibe, language);
+                    if (bestQuote) {
+                        usedFallback = true;
+                        console.log('✅ Using stored quote from database as fallback:', bestQuote);
+                        console.log('📊 DB stored quotes used due to AI service unavailability');
+                    } else {
+                        throw new Error('No fallback quotes available in database');
+                    }
+                } catch (dbError) {
+                    console.error('❌ Database fallback also failed:', dbError);
+                    throw new Error('Both AI generation and database fallback failed. Please try again later.');
+                }
+            } else {
+                throw error;
+            }
         }
 
         // Save quote to database if user is authenticated
@@ -158,7 +201,8 @@ exports.handler = async (event, context) => {
             context: context,
             backgroundImage: backgroundImage,
             timestamp: new Date().toISOString(),
-            saved: authenticated && user // Indicate if quote was saved
+            saved: authenticated && user, // Indicate if quote was saved
+            usedFallback: usedFallback
         };
 
         // Add rate limit info
@@ -194,6 +238,10 @@ exports.handler = async (event, context) => {
  * Step 1: Generate quotes using OpenAI
  */
 async function generateQuotes(apiKey, vibe, language, context, numQuotes) {
+    console.log('🎯 Starting generateQuotes function');
+    console.log('🎯 Input parameters:', { vibe, language, numQuotes });
+    console.log('🎯 Context received:', JSON.stringify(context, null, 2));
+    
     // Build contextual information for the prompt
     let contextualInfo = '';
     
@@ -239,6 +287,9 @@ async function generateQuotes(apiKey, vibe, language, context, numQuotes) {
     const languageInstruction = language && language.toLowerCase() !== 'english' 
         ? `Write the quote in ${targetLanguage.name}. Use proper grammar and natural expression in ${targetLanguage.name}.`
         : '';
+    
+    console.log('🌍 Target language:', targetLanguage.name);
+    console.log('🌍 Language instruction:', languageInstruction || 'English (default)');
 
     // Build the complete prompt
     const prompt = `You are a master quote generator with deep emotional intelligence. 
@@ -277,26 +328,26 @@ Focus on the emotional theme of ${vibe} and create quotes that would inspire som
         max_tokens: maxTokens
     };
 
-    console.log('⚙️ Request parameters:', {
-        model: GENERATION_MODEL,
-        temperature: 0.95,
-        max_tokens: maxTokens,
-        hasUserContext: !!context.userContext,
-        longerQuotes: longerQuotes
-    });
+    console.log('⚙️ Full request data being sent to OpenAI:');
+    console.log('=====================================');
+    console.log(JSON.stringify(requestData, null, 2));
+    console.log('=====================================');
 
     const response = await callOpenAI(apiKey, requestData);
-    const quotes = parseQuotesFromResponse(response);
+    console.log('📋 Raw response from OpenAI:', response);
     
-    console.log('📋 Generated quotes:', quotes);
+    const quotes = parseQuotesFromResponse(response);
+    console.log('📋 Parsed quotes:', quotes);
     
     // Validate we got the right number of quotes
     const minQuotes = 2;
     const maxQuotes = 3;
     if (quotes.length < minQuotes || quotes.length > maxQuotes) {
+        console.error(`❌ Quote count validation failed: Expected ${minQuotes}-${maxQuotes} quotes, got ${quotes.length}`);
         throw new Error(`Expected ${minQuotes}-${maxQuotes} quotes, got ${quotes.length}`);
     }
 
+    console.log('✅ Quote generation completed successfully');
     return quotes;
 }
 
@@ -401,27 +452,82 @@ Where the number corresponds to the quote's position in the list (1, 2, or 3).`;
  * Make OpenAI API call with error handling
  */
 async function callOpenAI(apiKey, requestData) {
-    const response = await fetch(OPENAI_API_URL, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify(requestData)
-    });
-
-    if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(`OpenAI API error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
-    }
-
-    const data = await response.json();
+    console.log('🔧 Making OpenAI API call...');
+    console.log('📋 Request model:', requestData.model);
+    console.log('📋 Request temperature:', requestData.temperature);
+    console.log('📋 Request max_tokens:', requestData.max_tokens || 'default');
+    console.log('📋 Request messages length:', requestData.messages?.length || 0);
     
-    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
-        throw new Error('Invalid response structure from OpenAI API');
-    }
+    try {
+        console.log('🌐 Sending request to:', OPENAI_API_URL);
+        console.log('🔑 API key present:', !!apiKey);
+        console.log('🔑 API key length:', apiKey ? apiKey.length : 0);
+        console.log('🔑 API key starts with:', apiKey ? apiKey.substring(0, 10) + '...' : 'N/A');
+        
+        const response = await fetch(OPENAI_API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`,
+            },
+            body: JSON.stringify(requestData)
+        });
 
-    return data.choices[0].message.content;
+        console.log('📥 Response status:', response.status);
+        console.log('📥 Response statusText:', response.statusText);
+        console.log('📥 Response headers:', Object.fromEntries(response.headers.entries()));
+
+        if (!response.ok) {
+            let errorData;
+            try {
+                errorData = await response.json();
+                console.log('❌ Error response body:', JSON.stringify(errorData, null, 2));
+            } catch (parseError) {
+                console.log('❌ Could not parse error response as JSON:', parseError.message);
+                errorData = {};
+            }
+            
+            const errorMessage = `OpenAI API error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`;
+            
+            // Log specific error types for better debugging
+            if (response.status === 502) {
+                console.error('🚨 502 Bad Gateway error from OpenAI');
+            } else if (response.status >= 500) {
+                console.error(`🚨 Server error ${response.status} from OpenAI`);
+            } else if (response.status === 429) {
+                console.error('🚨 Rate limit exceeded on OpenAI API');
+            } else if (response.status === 401) {
+                console.error('🚨 Authentication failed - check API key');
+            } else if (response.status === 400) {
+                console.error('🚨 Bad request - check request format');
+            }
+            
+            throw new Error(errorMessage);
+        }
+
+        const data = await response.json();
+        console.log('✅ OpenAI response received successfully');
+        console.log('📊 Response data keys:', Object.keys(data));
+        console.log('📊 Choices available:', data.choices?.length || 0);
+        
+        if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+            console.error('❌ Invalid response structure:', JSON.stringify(data, null, 2));
+            throw new Error('Invalid response structure from OpenAI API');
+        }
+
+        console.log('📝 Response content length:', data.choices[0].message.content?.length || 0);
+        console.log('📝 Response content preview:', data.choices[0].message.content?.substring(0, 100) + '...');
+        
+        return data.choices[0].message.content;
+    } catch (fetchError) {
+        console.error('❌ Fetch error details:', {
+            name: fetchError.name,
+            message: fetchError.message,
+            code: fetchError.code,
+            cause: fetchError.cause
+        });
+        throw fetchError;
+    }
 }
 
 /**
@@ -562,3 +668,37 @@ const generateQuoteImage = async (quote, vibe, language) => {
         </svg>
     `)}`; 
 };
+
+/**
+ * Retrieve a fallback quote from the database using existing utilities
+ */
+async function getFallbackQuoteFromDB(vibe, language) {
+    try {
+        console.log(`🔍 Searching database for ${vibe} quotes in ${language}...`);
+        
+        // Query for quotes matching the vibe from the database
+        // We'll get a random quote from existing stored quotes for this vibe
+        const queryText = `
+            SELECT quote_text, language 
+            FROM user_quotes 
+            WHERE vibe = $1 
+            AND (language = $2 OR language = 'english')
+            ORDER BY RANDOM() 
+            LIMIT 1
+        `;
+        
+        const result = await query(queryText, [vibe, language]);
+        
+        if (result.rows.length > 0) {
+            const fallbackQuote = result.rows[0];
+            console.log(`💾 Found fallback quote in database (language: ${fallbackQuote.language})`);
+            return fallbackQuote.quote_text;
+        } else {
+            console.log(`❌ No stored quotes found for vibe: ${vibe}, language: ${language}`);
+            return null;
+        }
+    } catch (error) {
+        console.error('❌ Database query error in fallback:', error);
+        return null;
+    }
+}
