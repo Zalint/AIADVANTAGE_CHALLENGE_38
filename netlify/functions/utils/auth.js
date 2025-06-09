@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const { getUserById } = require('./database');
 
-const JWT_SECRET = process.env.SESSION_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET;
 const JWT_EXPIRES_IN = '7d'; // Token expires in 7 days
 
 // Generate JWT token for user
@@ -33,7 +33,7 @@ function extractTokenFromCookie(cookieString) {
   const cookies = cookieString.split(';');
   for (let cookie of cookies) {
     const [name, value] = cookie.trim().split('=');
-    if (name === 'auth_token') {
+    if (name === 'auth-token') {
       return value;
     }
   }
