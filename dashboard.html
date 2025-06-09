@@ -316,5 +316,25 @@
     </div>
 
     <script src="dashboard.js"></script>
+    <script>
+        // Add chat widget with conditional greeting
+        window.addEventListener('load', function() {
+            const userName = document.getElementById('user-name').textContent;
+            const chatWidget = document.createElement('script');
+            chatWidget.setAttribute('defer', '');
+            chatWidget.setAttribute('data-relevanceai-share-id', 'd7b62b/454efacc47da-463b-877a-66e43c7b454a/2e5878bf-b797-4ce9-b1b3-2f368683f4ba');
+            chatWidget.setAttribute('src', 'https://app.relevanceai.com/embed/chat-bubble.js');
+            chatWidget.setAttribute('data-share-styles', 'hide_tool_steps=true&hide_file_uploads=false&hide_conversation_list=false&bubble_style=agent&primary_color=%23685FFF&bubble_icon=pd%2Fchat&input_placeholder_text=Type+your+message...&hide_logo=true&hide_description=false');
+            
+            // Add personalized greeting if user is logged in
+            if (userName && userName.trim() !== '') {
+                chatWidget.setAttribute('data-greeting', `Hello ${userName}! How can I help you today?`);
+            } else {
+                chatWidget.setAttribute('data-greeting', 'Hello! How can I help you today?');
+            }
+            
+            document.body.appendChild(chatWidget);
+        });
+    </script>
 </body>
 </html> 
