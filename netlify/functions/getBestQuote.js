@@ -265,10 +265,10 @@ async function generateQuotes(apiKey, vibe, language, context, numQuotes) {
     // Determine quote length based on user preference
     const longerQuotes = context.longerQuotes === true;
     const quoteLengthInstruction = longerQuotes 
-        ? 'Generate multi-sentence quotes (2-3 sentences each) with deeper insights and expanded wisdom.'
+        ? 'Generate multi-sentence quotes (1-2 sentences each) with deeper insights and expanded wisdom.'
         : 'Generate exactly one sentence per quote that is profound and emotionally impactful.';
     
-    const maxTokens = longerQuotes ? 400 : 200;
+    const maxTokens = longerQuotes ? 300 : 200;
     
     console.log('📏 Quote length preference:', longerQuotes ? 'LONGER (multi-sentence)' : 'STANDARD (single sentence)');
     console.log('🔧 Max tokens set to:', maxTokens);
