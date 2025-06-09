@@ -1,0 +1,11 @@
+#### 🎨 Personalization Features
+- **Theme Persistence**: Dark/light mode saved to user profile
+- **Language Memory**: Preferred language remembered across sessions
+- **Vibe Statistics**: Individual usage counts for each emotional theme
+- **Progressive Messaging**: Welcome messages evolve with user engagement
+- **Custom Greetings**: AI learns user patterns for better personalization
+- **User Preferences Modal**: Comprehensive settings accessible from header
+- **Personal Context Integration**: Custom context (200 characters) for personalized quotes
+- **Quote Length Preferences**: Toggle between standard and longer multi-sentence quotes
+- **Real-Time Validation**: Live character counting with color-coded feedback
+- **Seamless Settings Management**: Save, clear, and update preferences with instant feedback 

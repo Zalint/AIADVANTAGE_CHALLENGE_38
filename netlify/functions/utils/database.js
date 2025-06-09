@@ -160,6 +160,38 @@ async function getTotalQuoteCount(userId) {
   return parseInt(result.rows[0].total);
 }
 
+// User Preferences operations
+async function getUserPreferences(userId) {
+  const queryText = 'SELECT * FROM user_preferences WHERE user_id = $1';
+  const result = await query(queryText, [userId]);
+  return result.rows[0] || null;
+}
+
+async function saveUserPreferences(userId, customContext, longerQuotes) {
+  const queryText = `
+    INSERT INTO user_preferences (user_id, custom_context, longer_quotes, updated_at)
+    VALUES ($1, $2, $3, NOW())
+    ON CONFLICT (user_id) DO UPDATE
+    SET custom_context = $2,
+        longer_quotes = $3,
+        updated_at = NOW()
+    RETURNING *
+  `;
+  const result = await query(queryText, [userId, customContext, longerQuotes]);
+  return result.rows[0];
+}
+
+async function clearUserContext(userId) {
+  const queryText = `
+    UPDATE user_preferences 
+    SET custom_context = NULL, updated_at = NOW()
+    WHERE user_id = $1
+    RETURNING *
+  `;
+  const result = await query(queryText, [userId]);
+  return result.rows[0];
+}
+
 module.exports = {
   query,
   createUser,
@@ -170,5 +202,8 @@ module.exports = {
   saveUserQuote,
   getUserQuotes,
   getUserStats,
-  getTotalQuoteCount
+  getTotalQuoteCount,
+  getUserPreferences,
+  saveUserPreferences,
+  clearUserContext
 }; 

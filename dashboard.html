@@ -38,6 +38,9 @@
                         <option value="italian">Italiano</option>
                         <option value="slovak">Slovenčina</option>
                     </select>
+                    <button id="preferences-toggle" class="preferences-toggle" title="User Preferences">
+                        <span class="preferences-icon">⚙️</span>
+                    </button>
                     <div id="user-menu" class="user-menu">
                         <img id="user-avatar" class="user-avatar" src="" alt="User">
                         <span id="user-name" class="user-name"></span>
@@ -257,6 +260,59 @@
                 </div>
             </section>
         </main>
+    </div>
+
+    <!-- User Preferences Modal -->
+    <div id="preferences-modal" class="preferences-modal" style="display: none;">
+        <div class="modal-overlay" id="preferences-overlay"></div>
+        <div class="modal-content preferences-modal-content">
+            <div class="modal-header">
+                <h3>⚙️ Quote Customization</h3>
+                <p>Personalize your quote generation</p>
+                <button id="close-preferences-modal" class="close-modal-btn">✖️</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="preference-group">
+                    <label for="user-context" class="preference-label">
+                        📝 Add Personal Context
+                        <span class="preference-hint">Share what's on your mind to get more personalized quotes</span>
+                    </label>
+                    <textarea 
+                        id="user-context" 
+                        class="context-input" 
+                        placeholder="e.g., I'm starting a new job, dealing with a challenge, celebrating a milestone..."
+                        rows="3"
+                        maxlength="200"
+                    ></textarea>
+                    <div class="char-counter">
+                        <span id="context-counter">0</span>/200 characters
+                    </div>
+                </div>
+
+                <div class="preference-group">
+                    <div class="preference-toggle">
+                        <label class="toggle-label">
+                            <input type="checkbox" id="longer-quotes" class="toggle-input">
+                            <span class="toggle-slider"></span>
+                            <span class="toggle-text">
+                                <strong>📖 Longer Quotes</strong>
+                                <span class="toggle-description">Generate multi-sentence quotes with deeper insights</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="preference-actions">
+                    <button id="save-preferences-btn" class="save-btn">
+                        💾 Save Preferences
+                    </button>
+                    <button id="clear-context-btn" class="clear-btn">
+                        🗑️ Clear Context
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="dashboard.js"></script>

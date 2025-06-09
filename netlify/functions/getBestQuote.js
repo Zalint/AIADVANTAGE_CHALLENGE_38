@@ -93,6 +93,29 @@ exports.handler = async (event, context) => {
         }
 
         console.log(`Generating quotes for vibe: ${vibe} in ${language} with context:`, context);
+        
+        // Log detailed context information
+        console.log('=== CONTEXT ANALYSIS ===');
+        console.log('Raw context received:', JSON.stringify(context, null, 2));
+        
+        if (context.userContext) {
+            console.log('✅ User custom context found:', context.userContext);
+        } else {
+            console.log('❌ No user custom context provided');
+        }
+        
+        if (context.longerQuotes) {
+            console.log('✅ Longer quotes requested');
+        } else {
+            console.log('ℹ️ Standard quote length requested');
+        }
+        
+        if (context.holiday) {
+            console.log('🎉 Holiday context:', context.holiday);
+        }
+        
+        console.log('========================');
+        
         const rateLimitResultLog = checkDailyRateLimit(event);
         console.log(`Daily usage: ${rateLimitResultLog.usage}/${DAILY_REQUEST_LIMIT}`);
 
@@ -174,13 +197,32 @@ async function generateQuotes(apiKey, vibe, language, context, numQuotes) {
     // Build contextual information for the prompt
     let contextualInfo = '';
     
+    // Add user's custom context if provided
+    if (context.userContext) {
+        contextualInfo += ` Personal context: The user is currently ${context.userContext}. Tailor the quote to be especially relevant and supportive for their current situation.`;
+        console.log('📝 Added user context to prompt:', context.userContext);
+    }
+    
     if (context.holiday) {
         contextualInfo += ` It's ${context.holiday}, so naturally incorporate that joyful spirit into the quote without being too obvious or cliché.`;
+        console.log('🎉 Added holiday context to prompt:', context.holiday);
     }
     
     if (context.season) {
         contextualInfo += ` The season is ${context.season}, so let that natural rhythm subtly influence the quote.`;
+        console.log('🍂 Added seasonal context to prompt:', context.season);
     }
+
+    // Determine quote length based on user preference
+    const longerQuotes = context.longerQuotes === true;
+    const quoteLengthInstruction = longerQuotes 
+        ? 'Generate multi-sentence quotes (2-3 sentences each) with deeper insights and expanded wisdom.'
+        : 'Generate exactly one sentence per quote that is profound and emotionally impactful.';
+    
+    const maxTokens = longerQuotes ? 400 : 200;
+    
+    console.log('📏 Quote length preference:', longerQuotes ? 'LONGER (multi-sentence)' : 'STANDARD (single sentence)');
+    console.log('🔧 Max tokens set to:', maxTokens);
 
     // Language-specific configuration
     const languageMap = {
@@ -198,25 +240,32 @@ async function generateQuotes(apiKey, vibe, language, context, numQuotes) {
         ? `Write the quote in ${targetLanguage.name}. Use proper grammar and natural expression in ${targetLanguage.name}.`
         : '';
 
-    // Simpler prompt for guest users (single sentence quotes)
+    // Build the complete prompt
     const prompt = `You are a master quote generator with deep emotional intelligence. 
 
-Generate exactly ${numQuotes} unique, inspiring quotes about ${vibe}. Each quote should be exactly one sentence, profound, and emotionally impactful.${contextualInfo}
+Generate exactly ${numQuotes} unique, inspiring quotes about ${vibe}. ${quoteLengthInstruction}${contextualInfo}
 
 ${languageInstruction}
 
 Style requirements:
-- One sentence per quote
+- ${longerQuotes ? 'Multi-sentence quotes with deeper philosophical insights' : 'One sentence per quote'}
 - Original and authentic 
 - Emotionally resonant and memorable
 - Universal wisdom that speaks to the human condition
 - Avoid clichés and overused phrases
 - Make each quote distinctly different from others
+${context.userContext ? '- Make the quotes personally relevant to the user\'s current situation' : ''}
 
 Format your response as a JSON array with ${numQuotes} quotes:
 ["Quote 1", "Quote 2", "Quote 3"]
 
 Focus on the emotional theme of ${vibe} and create quotes that would inspire someone seeking that particular feeling or mindset.`;
+
+    // Log the final prompt for debugging
+    console.log('🤖 FINAL PROMPT SENT TO AI:');
+    console.log('=====================================');
+    console.log(prompt);
+    console.log('=====================================');
 
     const requestData = {
         model: GENERATION_MODEL,
@@ -225,11 +274,21 @@ Focus on the emotional theme of ${vibe} and create quotes that would inspire som
         top_p: 0.95,
         frequency_penalty: 0.3,
         presence_penalty: 0.3,
-        max_tokens: 200  // Shorter tokens for single sentence quotes
+        max_tokens: maxTokens
     };
+
+    console.log('⚙️ Request parameters:', {
+        model: GENERATION_MODEL,
+        temperature: 0.95,
+        max_tokens: maxTokens,
+        hasUserContext: !!context.userContext,
+        longerQuotes: longerQuotes
+    });
 
     const response = await callOpenAI(apiKey, requestData);
     const quotes = parseQuotesFromResponse(response);
+    
+    console.log('📋 Generated quotes:', quotes);
     
     // Validate we got the right number of quotes
     const minQuotes = 2;
@@ -245,6 +304,8 @@ Focus on the emotional theme of ${vibe} and create quotes that would inspire som
  * Step 2: Select the best quote from the generated options
  */
 async function selectBestQuote(apiKey, vibe, language, quotes, context) {
+    console.log('🎯 Starting quote evaluation phase...');
+    
     // Language-specific configuration
     const languageMap = {
         'english': { name: 'English', code: 'en' },
@@ -265,6 +326,16 @@ async function selectBestQuote(apiKey, vibe, language, quotes, context) {
     if (context.holiday) {
         contextualInfo += ` Consider that these quotes should resonate with the ${context.holiday} spirit.`;
     }
+    
+    if (context.userContext) {
+        contextualInfo += ` The user is currently ${context.userContext}, so prioritize the quote that would be most relevant and supportive for their specific situation.`;
+        console.log('📝 Including user context in evaluation:', context.userContext);
+    }
+    
+    if (context.longerQuotes) {
+        contextualInfo += ` The user prefers longer, more detailed quotes with deeper insights.`;
+        console.log('📖 Evaluating for longer quote preference');
+    }
 
     const evaluationPrompt = `You are a French literary jury expert evaluating inspirational quotes for emotional impact and literary quality.
 
@@ -279,13 +350,19 @@ Evaluate each quote based on:
 3. Originality and authenticity
 4. Universal appeal and wisdom
 5. Memorability and impact
+${context.userContext ? '6. Relevance to the user\'s current personal situation' : ''}
 
-Select the quote that best embodies the essence of ${vibe} and would be most inspiring to someone seeking that emotional state.
+Select the quote that best embodies the essence of ${vibe} and would be most inspiring to someone seeking that emotional state${context.userContext ? ', especially considering their current circumstances' : ''}.
 
 Respond with ONLY a JSON object in this format:
 {"best": 2}
 
 Where the number corresponds to the quote's position in the list (1, 2, or 3).`;
+
+    console.log('🤖 EVALUATION PROMPT SENT TO AI:');
+    console.log('=====================================');
+    console.log(evaluationPrompt);
+    console.log('=====================================');
 
     const evaluationData = {
         model: EVALUATION_MODEL,
@@ -298,19 +375,24 @@ Where the number corresponds to the quote's position in the list (1, 2, or 3).`;
     };
 
     const evaluationResponse = await callOpenAI(apiKey, evaluationData);
+    console.log('🎯 Raw evaluation response:', evaluationResponse);
     
     try {
         const result = JSON.parse(evaluationResponse.trim());
         const bestIndex = result.best;
         
+        console.log('🏆 AI selected quote #' + bestIndex + ' as the best');
+        console.log('🎯 Selected quote:', quotes[bestIndex - 1]);
+        
         if (bestIndex < 1 || bestIndex > quotes.length) {
-            console.warn(`Invalid quote selection: ${bestIndex}, using first quote`);
+            console.warn(`❌ Invalid quote selection: ${bestIndex}, using first quote instead`);
             return quotes[0];
         }
         
         return quotes[bestIndex - 1];
     } catch (parseError) {
-        console.warn('Failed to parse evaluation response, using first quote:', parseError);
+        console.warn('❌ Failed to parse evaluation response, using first quote:', parseError);
+        console.warn('Raw response that failed to parse:', evaluationResponse);
         return quotes[0];
     }
 }

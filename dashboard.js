@@ -58,7 +58,17 @@ class DashboardApp {
                     courage: "Face your fears",
                     wisdom: "Seek deeper understanding",
                     joy: "Celebrate life's moments"
-                }
+                },
+                // Preferences modal translations
+                quoteCustomization: "Quote Customization",
+                personalizeGeneration: "Personalize your quote generation",
+                addPersonalContext: "Add Personal Context",
+                shareWhatsOnMind: "Share what's on your mind to get more personalized quotes",
+                characters: "characters",
+                longerQuotes: "Longer Quotes",
+                longerQuotesDesc: "Generate multi-sentence quotes with deeper insights",
+                savePreferences: "Save Preferences",
+                clearContext: "Clear Context"
             },
             french: {
                 dashboardTitle: "✨ Citations Vibe",
@@ -107,7 +117,17 @@ class DashboardApp {
                     courage: "Affrontez vos peurs",
                     wisdom: "Cherchez une compréhension plus profonde",
                     joy: "Célébrez les moments de la vie"
-                }
+                },
+                // Preferences modal translations
+                quoteCustomization: "Personnalisation des Citations",
+                personalizeGeneration: "Personnalisez votre génération de citations",
+                addPersonalContext: "Ajouter un Contexte Personnel",
+                shareWhatsOnMind: "Partagez ce qui vous préoccupe pour des citations plus personnalisées",
+                characters: "caractères",
+                longerQuotes: "Citations Plus Longues",
+                longerQuotesDesc: "Générer des citations multi-phrases avec des insights plus profonds",
+                savePreferences: "Sauvegarder les Préférences",
+                clearContext: "Effacer le Contexte"
             },
             german: {
                 dashboardTitle: "✨ Vibe Zitate",
@@ -156,7 +176,17 @@ class DashboardApp {
                     courage: "Stelle dich deinen Ängsten",
                     wisdom: "Suche tieferes Verständnis",
                     joy: "Feiere die Momente des Lebens"
-                }
+                },
+                // Preferences modal translations
+                quoteCustomization: "Zitat-Anpassung",
+                personalizeGeneration: "Personalisieren Sie Ihre Zitatgenerierung",
+                addPersonalContext: "Persönlichen Kontext Hinzufügen",
+                shareWhatsOnMind: "Teilen Sie mit, was Sie beschäftigt, für personalisiertere Zitate",
+                characters: "Zeichen",
+                longerQuotes: "Längere Zitate",
+                longerQuotesDesc: "Mehrsätzige Zitate mit tieferen Einsichten generieren",
+                savePreferences: "Einstellungen Speichern",
+                clearContext: "Kontext Löschen"
             },
             spanish: {
                 dashboardTitle: "✨ Citas Vibe",
@@ -205,7 +235,17 @@ class DashboardApp {
                     courage: "Enfrenta tus miedos",
                     wisdom: "Busca comprensión más profunda",
                     joy: "Celebra los momentos de la vida"
-                }
+                },
+                // Preferences modal translations
+                quoteCustomization: "Personalización de Citas",
+                personalizeGeneration: "Personaliza tu generación de citas",
+                addPersonalContext: "Agregar Contexto Personal",
+                shareWhatsOnMind: "Comparte lo que tienes en mente para citas más personalizadas",
+                characters: "caracteres",
+                longerQuotes: "Citas Más Largas",
+                longerQuotesDesc: "Generar citas de múltiples oraciones con insights más profundos",
+                savePreferences: "Guardar Preferencias",
+                clearContext: "Limpiar Contexto"
             },
             portuguese: {
                 dashboardTitle: "✨ Citações Vibe",
@@ -254,7 +294,17 @@ class DashboardApp {
                     courage: "Enfrente seus medos",
                     wisdom: "Busque compreensão mais profunda",
                     joy: "Celebre os momentos da vida"
-                }
+                },
+                // Preferences modal translations
+                quoteCustomization: "Personalização de Citações",
+                personalizeGeneration: "Personalize sua geração de citações",
+                addPersonalContext: "Adicionar Contexto Pessoal",
+                shareWhatsOnMind: "Compartilhe o que está em sua mente para citações mais personalizadas",
+                characters: "caracteres",
+                longerQuotes: "Citações Mais Longas",
+                longerQuotesDesc: "Gerar citações de múltiplas frases com insights mais profundos",
+                savePreferences: "Salvar Preferências",
+                clearContext: "Limpar Contexto"
             },
             italian: {
                 dashboardTitle: "✨ Citazioni Vibe",
@@ -303,7 +353,17 @@ class DashboardApp {
                     courage: "Affronta le tue paure",
                     wisdom: "Cerca comprensione più profonda",
                     joy: "Celebra i momenti della vita"
-                }
+                },
+                // Preferences modal translations
+                quoteCustomization: "Personalizzazione Citazioni",
+                personalizeGeneration: "Personalizza la tua generazione di citazioni",
+                addPersonalContext: "Aggiungi Contesto Personale",
+                shareWhatsOnMind: "Condividi cosa hai in mente per citazioni più personalizzate",
+                characters: "caratteri",
+                longerQuotes: "Citazioni Più Lunghe",
+                longerQuotesDesc: "Genera citazioni multi-frase con intuizioni più profonde",
+                savePreferences: "Salva Preferenze",
+                clearContext: "Cancella Contesto"
             },
             slovak: {
                 dashboardTitle: "✨ Vibe Citáty",
@@ -352,7 +412,17 @@ class DashboardApp {
                     courage: "Čeľte svojim strachom",
                     wisdom: "Hľadajte hlbšie porozumenie",
                     joy: "Oslavujte životné okamihy"
-                }
+                },
+                // Preferences modal translations
+                quoteCustomization: "Prispôsobenie Citátov",
+                personalizeGeneration: "Prispôsobte si generovanie citátov",
+                addPersonalContext: "Pridať Osobný Kontext",
+                shareWhatsOnMind: "Zdieľajte, čo máte na mysli pre viac personalizované citáty",
+                characters: "znakov",
+                longerQuotes: "Dlhšie Citáty",
+                longerQuotesDesc: "Generovať viacvetné citáty s hlbšími poznatkami",
+                savePreferences: "Uložiť Nastavenia",
+                clearContext: "Vymazať Kontext"
             }
         };
         
@@ -620,6 +690,22 @@ class DashboardApp {
         document.getElementById('clear-filter-btn').addEventListener('click', async () => {
             await this.clearDateFilter();
         });
+
+        // Preferences Modal
+        document.getElementById('preferences-toggle').addEventListener('click', () => {
+            this.openPreferencesModal();
+        });
+
+        document.getElementById('close-preferences-modal').addEventListener('click', () => {
+            this.closePreferencesModal();
+        });
+
+        document.getElementById('preferences-overlay').addEventListener('click', () => {
+            this.closePreferencesModal();
+        });
+
+        // User Preferences
+        this.initUserPreferences();
     }
 
     async generateQuote(vibe) {
@@ -628,22 +714,31 @@ class DashboardApp {
         this.isGenerating = true;
         this.currentVibe = vibe;
         
+        // Get context and log it
+        const context = this.getContext();
+        console.log('🚀 Starting quote generation for vibe:', vibe);
+        console.log('📤 Context being sent to backend:', JSON.stringify(context, null, 2));
+        
         // Update UI
         this.showQuoteDisplay();
         this.showQuoteLoader(vibe);
         
         try {
+            const requestBody = {
+                vibe: vibe,
+                language: this.currentLanguage,
+                context: context
+            };
+            
+            console.log('📡 Full request body:', JSON.stringify(requestBody, null, 2));
+            
             const response = await fetch('/.netlify/functions/getBestQuote', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 credentials: 'include',
-                body: JSON.stringify({
-                    vibe: vibe,
-                    language: this.currentLanguage,
-                    context: this.getContext()
-                })
+                body: JSON.stringify(requestBody)
             });
 
             if (!response.ok) {
@@ -651,6 +746,8 @@ class DashboardApp {
             }
 
             const data = await response.json();
+            
+            console.log('📥 Response received from backend:', data);
             
             if (data.error) {
                 throw new Error(data.message || data.error);
@@ -663,7 +760,7 @@ class DashboardApp {
             setTimeout(() => this.refreshStats(), 1000);
 
         } catch (error) {
-            console.error('Error generating quote:', error);
+            console.error('❌ Error generating quote:', error);
             this.showError(error.message);
         } finally {
             this.isGenerating = false;
@@ -841,6 +938,7 @@ class DashboardApp {
     }
 
     getContext() {
+        console.log('🔍 Collecting user context...');
         const context = {};
         
         // Add holiday context if applicable
@@ -851,14 +949,40 @@ class DashboardApp {
         // Simple holiday detection
         if (month === 12 && day >= 20) {
             context.holiday = 'Christmas season';
+            console.log('🎄 Holiday detected:', context.holiday);
         } else if (month === 1 && day === 1) {
             context.holiday = 'New Year';
+            console.log('🎊 Holiday detected:', context.holiday);
         } else if (month === 2 && day === 14) {
             context.holiday = 'Valentine\'s Day';
+            console.log('💕 Holiday detected:', context.holiday);
         } else if (month === 10 && day === 31) {
             context.holiday = 'Halloween';
+            console.log('🎃 Holiday detected:', context.holiday);
+        } else {
+            console.log('📅 No holiday detected for current date');
+        }
+
+        // Add user preferences if available
+        const contextInput = document.getElementById('user-context');
+        const longerQuotesToggle = document.getElementById('longer-quotes');
+        
+        if (contextInput && contextInput.value.trim()) {
+            context.userContext = contextInput.value.trim();
+            console.log('✅ User context found:', context.userContext);
+            console.log('📏 User context length:', context.userContext.length + ' characters');
+        } else {
+            console.log('❌ No user context provided');
         }
         
+        if (longerQuotesToggle && longerQuotesToggle.checked) {
+            context.longerQuotes = true;
+            console.log('✅ Longer quotes preference: ENABLED');
+        } else {
+            console.log('📝 Longer quotes preference: DISABLED (standard length)');
+        }
+        
+        console.log('📋 Final context object:', context);
         return context;
     }
 
@@ -1129,6 +1253,32 @@ class DashboardApp {
             // Update page title
             document.title = `${t.dashboardTitle} - Dashboard`;
             
+            // Update preferences modal elements
+            const modalTitle = document.querySelector('.modal-header h2');
+            const modalSubtitle = document.querySelector('.modal-header p');
+            const contextSectionTitle = document.querySelector('.context-section h3');
+            const contextSectionDesc = document.querySelector('.context-section p');
+            const contextCounter = document.getElementById('context-counter');
+            const longerQuotesLabel = document.querySelector('.toggle-section h3');
+            const longerQuotesDesc = document.querySelector('.toggle-section p');
+            const saveBtn = document.getElementById('save-preferences-btn');
+            const clearBtn = document.getElementById('clear-context-btn');
+            
+            if (modalTitle) modalTitle.textContent = t.quoteCustomization;
+            if (modalSubtitle) modalSubtitle.textContent = t.personalizeGeneration;
+            if (contextSectionTitle) contextSectionTitle.textContent = t.addPersonalContext;
+            if (contextSectionDesc) contextSectionDesc.textContent = t.shareWhatsOnMind;
+            if (longerQuotesLabel) longerQuotesLabel.textContent = t.longerQuotes;
+            if (longerQuotesDesc) longerQuotesDesc.textContent = t.longerQuotesDesc;
+            if (saveBtn) saveBtn.textContent = `💾 ${t.savePreferences}`;
+            if (clearBtn) clearBtn.textContent = `🗑️ ${t.clearContext}`;
+            
+            // Update character counter text
+            if (contextCounter) {
+                const currentCount = contextCounter.textContent.match(/\d+/)?.[0] || '0';
+                contextCounter.innerHTML = `${currentCount}/200 ${t.characters}`;
+            }
+            
         } catch (error) {
             console.error('Dashboard translation error:', error);
         }
@@ -1238,6 +1388,196 @@ class DashboardApp {
             clearInterval(this.clockInterval);
             this.clockInterval = null;
         }
+    }
+
+    // User Preferences
+    initUserPreferences() {
+        const contextInput = document.getElementById('user-context');
+        const contextCounter = document.getElementById('context-counter');
+        const saveBtn = document.getElementById('save-preferences-btn');
+        const clearBtn = document.getElementById('clear-context-btn');
+        const longerQuotesToggle = document.getElementById('longer-quotes');
+
+        if (!contextInput || !contextCounter || !saveBtn || !clearBtn || !longerQuotesToggle) {
+            return; // Elements not found, preferences section probably not loaded
+        }
+
+        // Character counter for context input
+        contextInput.addEventListener('input', () => {
+            const length = contextInput.value.length;
+            const t = this.translations[this.currentLanguage] || this.translations.english;
+            contextCounter.innerHTML = `${length}/200 ${t.characters}`;
+            
+            // Update counter color based on limit
+            if (length > 180) {
+                contextCounter.style.color = '#ef4444'; // Red when approaching limit
+            } else if (length > 150) {
+                contextCounter.style.color = '#f59e0b'; // Orange when getting close
+            } else {
+                contextCounter.style.color = 'rgba(255, 255, 255, 0.6)'; // Default
+            }
+        });
+
+        // Save preferences
+        saveBtn.addEventListener('click', async () => {
+            await this.saveUserPreferences();
+        });
+
+        // Clear context
+        clearBtn.addEventListener('click', async () => {
+            await this.clearUserContext();
+        });
+
+        // Load existing preferences
+        this.loadUserPreferences();
+    }
+
+    async loadUserPreferences() {
+        try {
+            const response = await fetch('/.netlify/functions/user-preferences', {
+                method: 'GET',
+                credentials: 'include'
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const preferences = data.preferences;
+
+                // Update UI with loaded preferences
+                const contextInput = document.getElementById('user-context');
+                const longerQuotesToggle = document.getElementById('longer-quotes');
+                const contextCounter = document.getElementById('context-counter');
+
+                if (contextInput && preferences.custom_context) {
+                    contextInput.value = preferences.custom_context;
+                    if (contextCounter) {
+                        const t = this.translations[this.currentLanguage] || this.translations.english;
+                        contextCounter.innerHTML = `${preferences.custom_context.length}/200 ${t.characters}`;
+                    }
+                }
+
+                if (longerQuotesToggle) {
+                    longerQuotesToggle.checked = preferences.longer_quotes || false;
+                }
+            }
+        } catch (error) {
+            console.error('Error loading user preferences:', error);
+        }
+    }
+
+    async saveUserPreferences() {
+        const contextInput = document.getElementById('user-context');
+        const longerQuotesToggle = document.getElementById('longer-quotes');
+        const saveBtn = document.getElementById('save-preferences-btn');
+
+        if (!contextInput || !longerQuotesToggle || !saveBtn) {
+            return;
+        }
+
+        // Validate context length
+        if (contextInput.value.length > 200) {
+            alert('Custom context must be 200 characters or less.');
+            return;
+        }
+
+        // Show loading state
+        const originalText = saveBtn.textContent;
+        saveBtn.textContent = '💾 Saving...';
+        saveBtn.disabled = true;
+
+        try {
+            const response = await fetch('/.netlify/functions/user-preferences', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    customContext: contextInput.value.trim() || null,
+                    longerQuotes: longerQuotesToggle.checked
+                })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                saveBtn.textContent = '✅ Saved!';
+                setTimeout(() => {
+                    saveBtn.textContent = originalText;
+                }, 2000);
+            } else {
+                const error = await response.json();
+                throw new Error(error.error || 'Failed to save preferences');
+            }
+        } catch (error) {
+            console.error('Error saving preferences:', error);
+            saveBtn.textContent = '❌ Error';
+            alert('Failed to save preferences: ' + error.message);
+            setTimeout(() => {
+                saveBtn.textContent = originalText;
+            }, 2000);
+        } finally {
+            saveBtn.disabled = false;
+        }
+    }
+
+    async clearUserContext() {
+        const contextInput = document.getElementById('user-context');
+        const contextCounter = document.getElementById('context-counter');
+        const clearBtn = document.getElementById('clear-context-btn');
+
+        if (!contextInput || !clearBtn) {
+            return;
+        }
+
+        if (!confirm('Are you sure you want to clear your personal context?')) {
+            return;
+        }
+
+        // Show loading state
+        const originalText = clearBtn.textContent;
+        clearBtn.textContent = '🗑️ Clearing...';
+        clearBtn.disabled = true;
+
+        try {
+            const response = await fetch('/.netlify/functions/user-preferences', {
+                method: 'DELETE',
+                credentials: 'include'
+            });
+
+            if (response.ok) {
+                contextInput.value = '';
+                if (contextCounter) {
+                    contextCounter.textContent = '0';
+                    contextCounter.style.color = 'rgba(255, 255, 255, 0.6)';
+                }
+                clearBtn.textContent = '✅ Cleared!';
+                setTimeout(() => {
+                    clearBtn.textContent = originalText;
+                }, 2000);
+            } else {
+                const error = await response.json();
+                throw new Error(error.error || 'Failed to clear context');
+            }
+        } catch (error) {
+            console.error('Error clearing context:', error);
+            clearBtn.textContent = '❌ Error';
+            alert('Failed to clear context: ' + error.message);
+            setTimeout(() => {
+                clearBtn.textContent = originalText;
+            }, 2000);
+        } finally {
+            clearBtn.disabled = false;
+        }
+    }
+
+    openPreferencesModal() {
+        document.getElementById('preferences-modal').style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    }
+
+    closePreferencesModal() {
+        document.getElementById('preferences-modal').style.display = 'none';
+        document.body.style.overflow = ''; // Restore scrolling
     }
 }
 
