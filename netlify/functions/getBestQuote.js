@@ -152,30 +152,31 @@ exports.handler = async (event, context) => {
             console.log(`Selected best quote:`, bestQuote);
         } catch (error) {
             console.error('❌ Error with AI quote generation:', error);
+            console.log('🔍 Error details:', {
+                message: error.message,
+                status: error.status,
+                code: error.code,
+                type: typeof error
+            });
             
-            // Check if it's a 502 error or other API failure
-            if (error.message.includes('502') || error.message.includes('Bad Gateway') || 
-                error.message.includes('OpenAI API error') || error.message.includes('timeout') ||
-                error.message.includes('ECONNRESET') || error.message.includes('ETIMEDOUT') ||
-                error.message.includes('fetch failed') || error.code === 'ECONNREFUSED') {
-                
-                console.log('🔄 AI service unavailable, attempting database fallback...');
-                
-                try {
-                    bestQuote = await getFallbackQuoteFromDB(vibe, language);
-                    if (bestQuote) {
-                        usedFallback = true;
-                        console.log('✅ Using stored quote from database as fallback:', bestQuote);
-                        console.log('📊 DB stored quotes used due to AI service unavailability');
-                    } else {
-                        throw new Error('No fallback quotes available in database');
-                    }
-                } catch (dbError) {
-                    console.error('❌ Database fallback also failed:', dbError);
-                    throw new Error('Both AI generation and database fallback failed. Please try again later.');
+            // Always attempt database fallback for ANY error (429, 502, timeouts, etc.)
+            console.log('🔄 AI service error detected, attempting database fallback...');
+            console.log('📊 Error type: ' + (error.message.includes('429') ? 'RATE_LIMIT' : 
+                error.message.includes('502') ? 'BAD_GATEWAY' : 
+                error.message.includes('timeout') ? 'TIMEOUT' : 'UNKNOWN'));
+            
+            try {
+                bestQuote = await getFallbackQuoteFromDB(vibe, language);
+                if (bestQuote) {
+                    usedFallback = true;
+                    console.log('✅ Using stored quote from database as fallback:', bestQuote);
+                    console.log('📊 DB stored quotes used due to AI service unavailability');
+                } else {
+                    throw new Error('No fallback quotes available in database');
                 }
-            } else {
-                throw error;
+            } catch (dbError) {
+                console.error('❌ Database fallback also failed:', dbError);
+                throw new Error('Both AI generation and database fallback failed. Please try again later.');
             }
         }
 
