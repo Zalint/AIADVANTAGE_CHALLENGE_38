@@ -2,6 +2,8 @@
 // Handles two-step quote generation: generate 3 quotes, then select the best one
 
 const fetch = require('node-fetch');
+const { authenticateUser } = require('./utils/auth');
+const { saveUserQuote } = require('./utils/database');
 
 // OpenAI API configuration
 const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
@@ -69,6 +71,10 @@ exports.handler = async (event, context) => {
             };
         }
 
+        // Check if user is authenticated
+        const { authenticated, user } = await authenticateUser(event.headers);
+        console.log('Authentication status:', authenticated, user ? `User: ${user.name}` : 'Guest user');
+
         // Check daily rate limit
         const rateLimitResult = checkDailyRateLimit(event);
         if (!rateLimitResult.allowed) {
@@ -107,6 +113,17 @@ exports.handler = async (event, context) => {
             throw error;
         }
 
+        // Save quote to database if user is authenticated
+        if (authenticated && user) {
+            try {
+                await saveUserQuote(user.userId, vibe, bestQuote, language);
+                console.log(`Quote saved to database for user ${user.userId}`);
+            } catch (dbError) {
+                console.error('Error saving quote to database:', dbError);
+                // Don't fail the request if saving fails, just log it
+            }
+        }
+
         // Generate background image for the best quote
         const backgroundImage = await generateQuoteImage(bestQuote, vibe, language);
 
@@ -117,7 +134,8 @@ exports.handler = async (event, context) => {
             vibe,
             context: context,
             backgroundImage: backgroundImage,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
+            saved: authenticated && user // Indicate if quote was saved
         };
 
         // Add rate limit info
