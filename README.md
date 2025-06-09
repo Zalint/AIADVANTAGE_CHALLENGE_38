@@ -42,6 +42,68 @@ Choose from carefully curated emotional themes:
 - **Playback Controls**: Start/stop with visual feedback
 - **Optimized Speech**: Slightly slower rate for better comprehension
 
+### 👤 Authenticated User Experience
+
+#### 🔐 Google OAuth Integration
+- **Secure Authentication**: Google OAuth 2.0 with JWT session management
+- **Automatic Redirection**: Seamless login/logout flow
+- **Persistent Sessions**: Stay logged in across browser sessions
+- **Privacy Focused**: Only access to basic profile information
+
+#### 🏠 Personal Dashboard
+- **Real-Time Date Display**: Live date in header, updated every minute
+- **Language-Aware Formatting**: Date displays in user's selected language
+- **Responsive Header**: Clean, modern design with user info
+
+#### 🤖 AI-Powered Welcome Messages
+- **Personalized Greetings**: Dynamic messages based on user behavior
+- **Smart Context**: Time-aware greetings (morning, afternoon, evening, night)
+- **Usage-Based Content**: Messages adapt based on quote count and streaks
+- **Multilingual Generation**: AI creates messages in user's preferred language
+- **Fallback System**: Graceful degradation if AI generation fails
+
+#### 📊 User Statistics & Analytics
+- **Quote Journey Tracking**: Total quotes generated across all vibes
+- **Favorite Vibe Detection**: AI determines most-used vibe automatically
+- **Streak Calculation**: Days since account creation tracking
+- **Visual Stats Display**: Beautiful glassmorphism cards with live updates
+
+#### 🎯 Enhanced Quote Generation
+- **Premium Features**: 5 quotes generated vs 3 for guests
+- **Longer Content**: 1-2 sentence quotes vs single sentences for guests
+- **Advanced Validation**: Accepts 3-5 quotes vs 2-3 for guests
+- **Smart Fallback**: Falls back to guest settings if premium generation fails
+- **Persistent Storage**: All quotes saved to personal database
+
+#### 📜 Quote History & Management
+- **Complete History**: Access to all previously generated quotes
+- **Advanced Filtering**: Filter quotes by date range (start/end dates)
+- **Search Functionality**: Find quotes by vibe, date, or content
+- **Export Options**: Copy individual quotes or full history
+- **Organized Display**: Chronological listing with vibe badges
+- **Mobile Optimized**: Touch-friendly interface for all devices
+
+#### 🎨 Personalization Features
+- **Theme Persistence**: Dark/light mode saved to user profile
+- **Language Memory**: Preferred language remembered across sessions
+- **Vibe Statistics**: Individual usage counts for each emotional theme
+- **Progressive Messaging**: Welcome messages evolve with user engagement
+- **Custom Greetings**: AI learns user patterns for better personalization
+
+#### 🔧 Advanced Functionality
+- **Database Integration**: PostgreSQL backend for reliable data storage
+- **Real-Time Updates**: Statistics update immediately after new quotes
+- **Session Management**: Secure token handling with automatic refresh
+- **Error Recovery**: Robust error handling with user-friendly messages
+- **Performance Optimized**: Efficient database queries and caching
+
+#### 🛡️ Privacy & Security
+- **Data Protection**: User data encrypted and securely stored
+- **Minimal Data Collection**: Only essential information collected
+- **GDPR Compliant**: Respects user privacy rights
+- **Secure API Endpoints**: Authentication required for all user data
+- **Session Security**: JWT tokens with proper expiration handling
+
 ### 🛡️ Smart Rate Limiting
 - **Daily Limits**: 25 requests per day (configurable via environment variable)
 - **Usage Tracking**: Real-time display of daily quota
@@ -72,7 +134,17 @@ Create a `.env` file in the project root:
 ```bash
 OPENAI_API_KEY=your_openai_api_key_here
 DAILY_REQUEST_LIMIT=25  # Optional: default is 25
+GOOGLE_CLIENT_ID=your_google_client_id_here
+GOOGLE_CLIENT_SECRET=your_google_client_secret_here
+JWT_SECRET=your_jwt_secret_here
+DATABASE_URL=your_database_url_here
 ```
+
+#### Required API Keys & Services
+1. **OpenAI API Key**: Get from [OpenAI Platform](https://platform.openai.com/api-keys)
+2. **Google OAuth Credentials**: Create at [Google Cloud Console](https://console.cloud.google.com/)
+3. **PostgreSQL Database**: Use [Supabase](https://supabase.com/), [ElephantSQL](https://www.elephantsql.com/), or [Railway](https://railway.app/)
+4. **JWT Secret**: Generate a secure random string (min 32 characters)
 
 ### 4. Deploy to Netlify
 
@@ -112,6 +184,10 @@ netlify env:set OPENAI_API_KEY your_api_key_here
 |----------|-------------|---------|----------|
 | `OPENAI_API_KEY` | Your OpenAI API key | - | ✅ Yes |
 | `DAILY_REQUEST_LIMIT` | Max requests per day per IP | 25 | ❌ No |
+| `GOOGLE_CLIENT_ID` | Google OAuth 2.0 Client ID | - | ✅ Yes (for auth) |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth 2.0 Client Secret | - | ✅ Yes (for auth) |
+| `JWT_SECRET` | Secret key for JWT token signing | - | ✅ Yes (for auth) |
+| `DATABASE_URL` | PostgreSQL connection string | - | ✅ Yes (for auth) |
 
 ### AI Model Configuration
 The application uses two different AI models:
@@ -142,15 +218,28 @@ The application uses two different AI models:
 ```
 vibe-quotes/
 ├── 🏠 Frontend
-│   ├── index.html          # Main application
+│   ├── index.html          # Main application (guests)
+│   ├── dashboard.html      # Authenticated user dashboard
 │   ├── style.css          # Enhanced styling with themes
+│   ├── dashboard.css       # Dashboard-specific styles
 │   ├── styles.css         # Additional styles
 │   ├── script.js          # Class-based JavaScript (1687 lines)
+│   ├── dashboard.js       # Dashboard functionality with real-time features
 │   ├── sw.js              # Service worker (offline support)
 │   └── manifest.json      # PWA manifest
 ├── ⚡ Backend
 │   └── netlify/functions/
-│       └── getBestQuote.js # Two-step AI processing (452 lines)
+│       ├── getBestQuote.js        # Two-step AI processing (452 lines)
+│       ├── auth-google.js         # Google OAuth authentication
+│       ├── auth-user.js           # User session management
+│       ├── auth-logout.js         # Logout handling
+│       ├── store-quote.js         # Quote storage to database
+│       ├── get-user-quotes.js     # User quote history retrieval
+│       ├── generate-welcome-message.js # AI-powered welcome messages
+│       └── utils/
+│           ├── auth.js            # Authentication utilities
+│           ├── database.js        # Database connection helpers
+│           └── jwt.js             # JWT token management
 ├── 📦 Configuration
 │   ├── package.json       # Node.js dependencies
 │   ├── package-lock.json  # Locked dependencies
@@ -360,7 +449,17 @@ location.reload();
 
 ## 🆕 Recent Updates
 
-### Version 1.0.0 (Latest)
+### Version 2.0.0 (Latest) - Authenticated User Experience
+- ✅ **Google OAuth Integration**: Secure authentication with persistent sessions
+- ✅ **Personal Dashboard**: Real-time date display and user statistics
+- ✅ **AI Welcome Messages**: Personalized greetings based on user behavior
+- ✅ **Quote History & Filtering**: Complete history with date range filters
+- ✅ **Enhanced Generation**: Premium features for authenticated users
+- ✅ **Database Integration**: PostgreSQL backend for reliable data storage
+- ✅ **User Analytics**: Favorite vibe detection and streak tracking
+- ✅ **Advanced Security**: JWT tokens with proper session management
+
+### Version 1.0.0 - Core Features
 - ✅ Two-step AI quote generation system
 - ✅ 7-language support with native TTS
 - ✅ AI-generated background images
@@ -371,11 +470,12 @@ location.reload();
 - ✅ Comprehensive error handling
 
 ### Planned Features
-- 🔄 User accounts and quote history
 - 🔄 Social sharing capabilities
-- 🔄 Quote categories and filtering
-- 🔄 Custom vibe creation
+- 🔄 Quote categories and advanced filtering
+- 🔄 Custom vibe creation for authenticated users
+- 🔄 Export functionality (PDF, image formats)
 - 🔄 API for third-party integrations
+- 🔄 Mobile app versions (iOS/Android)
 
 ## 🤝 Contributing
 

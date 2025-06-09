@@ -2,8 +2,6 @@
 // Handles two-step quote generation: generate 3 quotes, then select the best one
 
 const fetch = require('node-fetch');
-const { authenticateUser } = require('./utils/auth');
-const { saveUserQuote } = require('./utils/database');
 
 // OpenAI API configuration
 const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
@@ -11,7 +9,7 @@ const GENERATION_MODEL = 'gpt-4o';
 const EVALUATION_MODEL = 'gpt-4.1-mini';
 
 // Rate limiting configuration
-const DAILY_REQUEST_LIMIT = parseInt(process.env.DAILY_REQUEST_LIMIT) || 100;
+const DAILY_REQUEST_LIMIT = parseInt(process.env.DAILY_REQUEST_LIMIT) || 25;
 
 // Simple in-memory storage for demo purposes
 // In production, you'd want to use a proper database or Redis
@@ -71,82 +69,46 @@ exports.handler = async (event, context) => {
             };
         }
 
-        // Check if user is authenticated
-        const { authenticated, user } = await authenticateUser(event.headers);
-        console.log('Authentication status:', authenticated, user ? user.email : 'guest');
-
-        // Check daily rate limit (only for guest users)
-        if (!authenticated) {
-            const rateLimitResult = checkDailyRateLimit(event);
-            if (!rateLimitResult.allowed) {
-                console.log(`Rate limit exceeded: ${rateLimitResult.usage}/${DAILY_REQUEST_LIMIT}`);
-                return {
-                    statusCode: 429,
-                    headers,
-                    body: JSON.stringify({ 
-                        error: 'Daily request limit exceeded',
-                        message: `You have reached the daily limit of ${DAILY_REQUEST_LIMIT} requests. Please try again tomorrow.`,
-                        usage: rateLimitResult.usage,
-                        limit: DAILY_REQUEST_LIMIT,
-                        resetTime: rateLimitResult.resetTime
-                    })
-                };
-            }
+        // Check daily rate limit
+        const rateLimitResult = checkDailyRateLimit(event);
+        if (!rateLimitResult.allowed) {
+            console.log(`Rate limit exceeded: ${rateLimitResult.usage}/${DAILY_REQUEST_LIMIT}`);
+            return {
+                statusCode: 429,
+                headers,
+                body: JSON.stringify({ 
+                    error: 'Daily request limit exceeded',
+                    message: `You have reached the daily limit of ${DAILY_REQUEST_LIMIT} requests. Please try again tomorrow.`,
+                    usage: rateLimitResult.usage,
+                    limit: DAILY_REQUEST_LIMIT,
+                    resetTime: rateLimitResult.resetTime
+                })
+            };
         }
 
         console.log(`Generating quotes for vibe: ${vibe} in ${language} with context:`, context);
-        if (!authenticated) {
-            const rateLimitResult = checkDailyRateLimit(event);
-            console.log(`Daily usage: ${rateLimitResult.usage}/${DAILY_REQUEST_LIMIT}`);
-        }
+        const rateLimitResultLog = checkDailyRateLimit(event);
+        console.log(`Daily usage: ${rateLimitResultLog.usage}/${DAILY_REQUEST_LIMIT}`);
 
-        // Step 1: Generate quotes (5 for authenticated users, 3 for guests)
-        const numQuotes = authenticated ? 5 : 3;
+        // Step 1: Generate 3 quotes
+        const numQuotes = 3;
         let quotes;
         let bestQuote;
         
         try {
-            quotes = await generateQuotes(apiKey, vibe, language, context, authenticated, numQuotes);
+            quotes = await generateQuotes(apiKey, vibe, language, context, numQuotes);
             console.log(`Generated ${numQuotes} quotes:`, quotes);
 
             // Step 2: Select the best quote
-            bestQuote = await selectBestQuote(apiKey, vibe, language, quotes, context, authenticated);
+            bestQuote = await selectBestQuote(apiKey, vibe, language, quotes, context);
             console.log(`Selected best quote:`, bestQuote);
         } catch (error) {
-            console.error(`Error with ${authenticated ? 'authenticated' : 'guest'} quote generation:`, error);
-            
-            // If authenticated user generation fails, fallback to guest approach
-            if (authenticated) {
-                console.log('Falling back to guest-style quote generation for authenticated user');
-                try {
-                    const guestNumQuotes = 3;
-                    quotes = await generateQuotes(apiKey, vibe, language, context, false, guestNumQuotes);
-                    console.log(`Fallback generated ${guestNumQuotes} quotes:`, quotes);
-
-                    bestQuote = await selectBestQuote(apiKey, vibe, language, quotes, context, false);
-                    console.log(`Fallback selected best quote:`, bestQuote);
-                } catch (fallbackError) {
-                    console.error('Fallback quote generation also failed:', fallbackError);
-                    throw fallbackError;
-                }
-            } else {
-                throw error;
-            }
+            console.error('Error with quote generation:', error);
+            throw error;
         }
 
         // Generate background image for the best quote
         const backgroundImage = await generateQuoteImage(bestQuote, vibe, language);
-
-        // Save quote to database if user is authenticated
-        if (authenticated && user) {
-            try {
-                await saveUserQuote(user.userId, vibe, bestQuote, language);
-                console.log(`Saved quote to database for user ${user.email}`);
-            } catch (dbError) {
-                console.error('Failed to save quote to database:', dbError);
-                // Don't fail the request if database save fails
-            }
-        }
 
         // Prepare response data
         const responseData = {
@@ -155,15 +117,12 @@ exports.handler = async (event, context) => {
             vibe,
             context: context,
             backgroundImage: backgroundImage,
-            timestamp: new Date().toISOString(),
-            authenticated
+            timestamp: new Date().toISOString()
         };
 
-        // Add rate limit info for guest users
-        if (!authenticated) {
-            const rateLimitResult = checkDailyRateLimit(event);
-            responseData.requestsRemaining = DAILY_REQUEST_LIMIT - rateLimitResult.usage;
-        }
+        // Add rate limit info
+        const rateLimitResultFinal = checkDailyRateLimit(event);
+        responseData.requestsRemaining = DAILY_REQUEST_LIMIT - rateLimitResultFinal.usage;
 
         // Return the result
         return {
@@ -193,379 +152,313 @@ exports.handler = async (event, context) => {
 /**
  * Step 1: Generate quotes using OpenAI
  */
-async function generateQuotes(apiKey, vibe, language, context, authenticated, numQuotes) {
+async function generateQuotes(apiKey, vibe, language, context, numQuotes) {
     // Build contextual information for the prompt
     let contextualInfo = '';
     
     if (context.holiday) {
-        contextualInfo += `It's currently ${context.holiday}. `;
+        contextualInfo += ` It's ${context.holiday}, so naturally incorporate that joyful spirit into the quote without being too obvious or cliché.`;
     }
     
-    // Map language codes to language names
+    if (context.season) {
+        contextualInfo += ` The season is ${context.season}, so let that natural rhythm subtly influence the quote.`;
+    }
+
+    // Language-specific configuration
     const languageMap = {
-        'english': 'English',
-        'french': 'French',
-        'german': 'German',
-        'spanish': 'Spanish',
-        'portuguese': 'Portuguese',
-        'italian': 'Italian',
-        'slovak': 'Slovak'
+        'english': { name: 'English', code: 'en' },
+        'french': { name: 'French', code: 'fr' },
+        'german': { name: 'German', code: 'de' },
+        'spanish': { name: 'Spanish', code: 'es' },
+        'portuguese': { name: 'Portuguese', code: 'pt' },
+        'italian': { name: 'Italian', code: 'it' },
+        'slovak': { name: 'Slovak', code: 'sk' }
     };
-    
-    const targetLanguage = languageMap[language] || 'English';
-    
-    // Different prompts for authenticated vs guest users
-    let prompt;
-    
-    if (authenticated) {
-        // Enhanced prompt for logged-in users - longer, more inspiring quotes
-        prompt = `You are a master motivational speaker and life coach, creating powerful, transformative quotes.
-Generate exactly ${numQuotes} deeply inspiring and longer motivational quotes that match the vibe: "${vibe}".
 
-IMPORTANT: Generate all quotes in ${targetLanguage}. Make sure the quotes are natural and profoundly inspirational in ${targetLanguage}.
+    const targetLanguage = languageMap[language?.toLowerCase()] || languageMap['english'];
+    const languageInstruction = language && language.toLowerCase() !== 'english' 
+        ? `Write the quote in ${targetLanguage.name}. Use proper grammar and natural expression in ${targetLanguage.name}.`
+        : '';
 
-${contextualInfo ? `IMPORTANT CONTEXT: ${contextualInfo}Please incorporate this context meaningfully into the quotes when relevant. For holidays, reference the spirit and deeper meaning of the occasion.` : ''}
+    // Simpler prompt for guest users (single sentence quotes)
+    const prompt = `You are a master quote generator with deep emotional intelligence. 
 
-REQUIREMENTS FOR EACH QUOTE:
-- 1-2 sentences long (impactful and concise)
-- Deeply philosophical and thought-provoking
-- Emotionally resonant and transformative
-- Specific to the "${vibe}" theme with rich depth
-- Actionable wisdom that can change someone's perspective
-- Poetic and memorable language
-- Personal and relatable yet universal
+Generate exactly ${numQuotes} unique, inspiring quotes about ${vibe}. Each quote should be exactly one sentence, profound, and emotionally impactful.${contextualInfo}
 
-Format them as a numbered list:
-1. [quote 1]
-2. [quote 2]  
-3. [quote 3]
-${numQuotes > 3 ? '4. [quote 4]\n' : ''}${numQuotes > 4 ? '5. [quote 5]' : ''}
+${languageInstruction}
 
-Each quote should be a complete mini-philosophy that someone would want to save, share, and live by.
-Make them impactful and substantial while keeping them concise and shareable.
-Remember: ALL quotes must be in ${targetLanguage}.`;
-    } else {
-        // Original prompt for guest users - shorter quotes
-        prompt = `You are an inspiring quote generator.
-Generate exactly ${numQuotes} short motivational quotes (one sentence each) that match the vibe: "${vibe}".
+Style requirements:
+- One sentence per quote
+- Original and authentic 
+- Emotionally resonant and memorable
+- Universal wisdom that speaks to the human condition
+- Avoid clichés and overused phrases
+- Make each quote distinctly different from others
 
-IMPORTANT: Generate all quotes in ${targetLanguage}. Make sure the quotes are natural and inspirational in ${targetLanguage}.
+Format your response as a JSON array with ${numQuotes} quotes:
+["Quote 1", "Quote 2", "Quote 3"]
 
-${contextualInfo ? `IMPORTANT CONTEXT: ${contextualInfo}Please incorporate this context naturally into the quotes when relevant. For holidays, reference the spirit of the occasion.` : ''}
+Focus on the emotional theme of ${vibe} and create quotes that would inspire someone seeking that particular feeling or mindset.`;
 
-Format them as a numbered list:
-1. [quote 1]
-2. [quote 2]  
-3. [quote 3]
+    const requestData = {
+        model: GENERATION_MODEL,
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 0.95,
+        top_p: 0.95,
+        frequency_penalty: 0.3,
+        presence_penalty: 0.3,
+        max_tokens: 200  // Shorter tokens for single sentence quotes
+    };
 
-Make each quote unique, impactful, and directly related to the "${vibe}" theme.
-Each quote should be complete in one sentence and ready to inspire someone.
-If there's relevant context provided, subtly weave it into the quotes to make them more timely and personal.
-Remember: ALL quotes must be in ${targetLanguage}.`;
-    }
-
-    const response = await callOpenAI(apiKey, prompt, {
-        max_tokens: authenticated ? 300 : 200  // More tokens for longer quotes for authenticated users
-    });
-    
-    // Parse the numbered list response
+    const response = await callOpenAI(apiKey, requestData);
     const quotes = parseQuotesFromResponse(response);
     
-    // More flexible validation - accept a range of quotes
-    const minQuotes = authenticated ? 3 : 2;
-    const maxQuotes = authenticated ? 5 : 3;
-    
+    // Validate we got the right number of quotes
+    const minQuotes = 2;
+    const maxQuotes = 3;
     if (quotes.length < minQuotes || quotes.length > maxQuotes) {
         throw new Error(`Expected ${minQuotes}-${maxQuotes} quotes, got ${quotes.length}`);
     }
-    
+
     return quotes;
 }
 
 /**
- * Step 2: Select the best quote from the generated quotes
+ * Step 2: Select the best quote from the generated options
  */
-async function selectBestQuote(apiKey, vibe, language, quotes, context, authenticated) {
-    const quotesJson = quotes.map((quote, index) => ({
-        numero: index + 1,
-        citation: quote
-    }));
-    
-    // Map language codes to language names for the jury prompt
+async function selectBestQuote(apiKey, vibe, language, quotes, context) {
+    // Language-specific configuration
     const languageMap = {
-        'english': 'English',
-        'french': 'French',
-        'german': 'German',
-        'spanish': 'Spanish',
-        'portuguese': 'Portuguese',
-        'italian': 'Italian',
-        'slovak': 'Slovak'
+        'english': { name: 'English', code: 'en' },
+        'french': { name: 'French', code: 'fr' },
+        'german': { name: 'German', code: 'de' },
+        'spanish': { name: 'Spanish', code: 'es' },
+        'portuguese': { name: 'Portuguese', code: 'pt' },
+        'italian': { name: 'Italian', code: 'it' },
+        'slovak': { name: 'Slovak', code: 'sk' }
     };
-    
-    const targetLanguage = languageMap[language] || 'English';
-    
-    const systemPrompt = `Tu es un jury littéraire expert en citations inspirantes. Tu dois évaluer ${quotes.length} citations selon les critères suivants:
-- Impact émotionnel et force inspirante
-- Pertinence avec le thème "${vibe}"
-- Qualité littéraire et beauté de l'expression
-- Originalité et mémorabilité
-${context.holiday ? `- Pertinence avec le contexte actuel (${context.holiday})` : ''}
 
-Tu dois choisir la MEILLEURE citation parmi les ${quotes.length} proposées.
-Renvoie strictement : {"best": n} où n est le numéro de la meilleure citation.`;
+    const targetLanguage = languageMap[language?.toLowerCase()] || languageMap['english'];
+    const languageNote = language && language.toLowerCase() !== 'english' 
+        ? ` The quotes are in ${targetLanguage.name}.`
+        : '';
 
-    const requestBody = {
+    let contextualInfo = '';
+    if (context.holiday) {
+        contextualInfo += ` Consider that these quotes should resonate with the ${context.holiday} spirit.`;
+    }
+
+    const evaluationPrompt = `You are a French literary jury expert evaluating inspirational quotes for emotional impact and literary quality.
+
+Here are ${quotes.length} quotes about ${vibe}:
+${quotes.map((quote, index) => `${index + 1}. "${quote}"`).join('\n')}
+
+${languageNote}${contextualInfo}
+
+Evaluate each quote based on:
+1. Emotional resonance and inspirational power
+2. Literary quality and elegance
+3. Originality and authenticity
+4. Universal appeal and wisdom
+5. Memorability and impact
+
+Select the quote that best embodies the essence of ${vibe} and would be most inspiring to someone seeking that emotional state.
+
+Respond with ONLY a JSON object in this format:
+{"best": 2}
+
+Where the number corresponds to the quote's position in the list (1, 2, or 3).`;
+
+    const evaluationData = {
         model: EVALUATION_MODEL,
         messages: [
-            {
-                role: "system",
-                content: systemPrompt
-            },
-            {
-                role: "user",
-                content: JSON.stringify(quotesJson)
-            }
+            { role: 'system', content: 'You are a French literary jury expert who evaluates quotes based on emotional impact, literary quality, and inspirational power. Always respond with valid JSON.' },
+            { role: 'user', content: evaluationPrompt }
         ],
         temperature: 0,
         max_tokens: 50
     };
 
-    const response = await fetch(OPENAI_API_URL, {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${apiKey}`,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(requestBody)
-    });
-
-    if (!response.ok) {
-        const errorText = await response.text();
-        console.error('OpenAI API error for evaluation:', response.status, errorText);
-        throw new Error(`OpenAI API error: ${response.status} ${response.statusText}`);
-    }
-
-    const data = await response.json();
+    const evaluationResponse = await callOpenAI(apiKey, evaluationData);
     
-    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
-        throw new Error('Invalid response format from OpenAI for evaluation');
-    }
-
     try {
-        const evaluationResult = JSON.parse(data.choices[0].message.content.trim());
-        const selectedIndex = evaluationResult.best - 1; // Convert to 0-based index
+        const result = JSON.parse(evaluationResponse.trim());
+        const bestIndex = result.best;
         
-        if (selectedIndex >= 0 && selectedIndex < quotes.length) {
-            return quotes[selectedIndex];
-        } else {
-            console.error('Invalid selection index from evaluation:', evaluationResult);
-            return quotes[0]; // Fallback to first quote
+        if (bestIndex < 1 || bestIndex > quotes.length) {
+            console.warn(`Invalid quote selection: ${bestIndex}, using first quote`);
+            return quotes[0];
         }
-    } catch (error) {
-        console.error('Error parsing evaluation result:', error);
-        return quotes[0]; // Fallback to first quote
+        
+        return quotes[bestIndex - 1];
+    } catch (parseError) {
+        console.warn('Failed to parse evaluation response, using first quote:', parseError);
+        return quotes[0];
     }
 }
 
 /**
- * Make a call to OpenAI API
+ * Make OpenAI API call with error handling
  */
-async function callOpenAI(apiKey, prompt, modelConfig = {}) {
-    const defaultConfig = {
-        model: GENERATION_MODEL,
-        max_tokens: 200,
-        temperature: 0.95,
-        top_p: 0.95,
-        frequency_penalty: 0.3,
-        presence_penalty: 0.3
-    };
-
-    const config = { ...defaultConfig, ...modelConfig };
-
-    const requestBody = {
-        model: config.model,
-        messages: [
-            {
-                role: 'user',
-                content: prompt
-            }
-        ],
-        max_tokens: config.max_tokens,
-        temperature: config.temperature,
-        top_p: config.top_p,
-        frequency_penalty: config.frequency_penalty,
-        presence_penalty: config.presence_penalty
-    };
-
+async function callOpenAI(apiKey, requestData) {
     const response = await fetch(OPENAI_API_URL, {
         method: 'POST',
         headers: {
+            'Content-Type': 'application/json',
             'Authorization': `Bearer ${apiKey}`,
-            'Content-Type': 'application/json'
         },
-        body: JSON.stringify(requestBody)
+        body: JSON.stringify(requestData)
     });
 
     if (!response.ok) {
-        const errorText = await response.text();
-        console.error('OpenAI API error:', response.status, errorText);
-        throw new Error(`OpenAI API error: ${response.status} ${response.statusText}`);
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(`OpenAI API error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
     }
 
     const data = await response.json();
     
     if (!data.choices || !data.choices[0] || !data.choices[0].message) {
-        throw new Error('Invalid response format from OpenAI');
+        throw new Error('Invalid response structure from OpenAI API');
     }
 
-    return data.choices[0].message.content.trim();
+    return data.choices[0].message.content;
 }
 
 /**
- * Parse quotes from the numbered list response
+ * Parse quotes from OpenAI response
  */
 function parseQuotesFromResponse(response) {
-    const lines = response.split('\n').filter(line => line.trim());
-    const quotes = [];
-    let currentQuote = '';
-    let isInQuote = false;
-    
-    for (const line of lines) {
-        const trimmedLine = line.trim();
-        
-        // Check if this line starts a new numbered quote
-        const numberMatch = trimmedLine.match(/^\d+\.\s*(.+)$/);
-        
-        if (numberMatch) {
-            // If we were building a previous quote, save it
-            if (currentQuote && isInQuote) {
-                let cleanQuote = currentQuote.trim();
-                // Remove surrounding quotes if present
-                cleanQuote = cleanQuote.replace(/^["']|["']$/g, '');
-                quotes.push(cleanQuote);
-            }
-            
-            // Start new quote
-            currentQuote = numberMatch[1];
-            isInQuote = true;
-        } else if (isInQuote && trimmedLine && !trimmedLine.toLowerCase().includes('here are')) {
-            // This line is a continuation of the current quote
-            currentQuote += ' ' + trimmedLine;
+    try {
+        // Try to parse as JSON array first
+        const parsed = JSON.parse(response.trim());
+        if (Array.isArray(parsed)) {
+            return parsed.map(quote => 
+                typeof quote === 'string' ? quote.trim().replace(/^["']|["']$/g, '') : String(quote).trim()
+            ).filter(quote => quote.length > 0);
+        }
+    } catch (jsonError) {
+        console.warn('Failed to parse as JSON, trying regex extraction:', jsonError);
+    }
+
+    // Fallback: extract quotes using regex patterns
+    const patterns = [
+        /"([^"]+)"/g,                    // "quoted text"
+        /'([^']+)'/g,                    // 'quoted text'
+        /(?:^|\n)\d+\.\s*(.+?)(?=\n|$)/g, // 1. numbered list
+        /(?:^|\n)-\s*(.+?)(?=\n|$)/g,    // - bullet points
+        /(?:^|\n)•\s*(.+?)(?=\n|$)/g     // • bullet points
+    ];
+
+    let quotes = [];
+    for (const pattern of patterns) {
+        const matches = [...response.matchAll(pattern)];
+        if (matches.length > 0) {
+            quotes = matches.map(match => match[1].trim()).filter(quote => quote.length > 10);
+            if (quotes.length >= 2) break;
         }
     }
-    
-    // Don't forget the last quote
-    if (currentQuote && isInQuote) {
-        let cleanQuote = currentQuote.trim();
-        // Remove surrounding quotes if present
-        cleanQuote = cleanQuote.replace(/^["']|["']$/g, '');
-        quotes.push(cleanQuote);
-    }
-    
-    // Fallback: if numbered parsing fails, try to extract any quotes
+
+    // If no patterns match, split by common delimiters
     if (quotes.length === 0) {
-        const fallbackQuotes = response.split('\n')
-            .filter(line => line.trim() && !line.toLowerCase().includes('here are'))
-            .map(line => line.trim().replace(/^[-*•]\s*/, '').replace(/^\d+\.\s*/, ''))
-            .filter(line => line.length > 10)
-            .slice(0, 5); // Allow up to 5 quotes for authenticated users
-        
-        return fallbackQuotes;
+        quotes = response.split(/[\n\r]+/)
+            .map(line => line.trim())
+            .filter(line => line.length > 10 && !line.match(/^\d+\.?\s*$/))
+            .slice(0, 5); // Allow up to 5 quotes
     }
-    
+
     return quotes;
 }
 
 /**
- * Check daily rate limit for the user
+ * Check if user has exceeded daily rate limit
  */
 function checkDailyRateLimit(event) {
-    // Get client identifier (IP address as fallback)
+    const today = new Date().toDateString();
     const clientIP = event.headers['x-forwarded-for'] || 
-                     event.headers['x-real-ip'] || 
-                     'unknown';
+                    event.headers['x-real-ip'] || 
+                    'unknown';
     
-    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-    const key = `${clientIP}-${today}`;
-    
-    // Clean up old entries (simple cleanup - remove entries from previous days)
-    cleanupOldEntries();
+    const key = `${clientIP}_${today}`;
     
     // Get current usage
     const currentUsage = dailyUsage.get(key) || 0;
     
-    // Calculate reset time (midnight UTC)
-    const tomorrow = new Date();
-    tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
-    tomorrow.setUTCHours(0, 0, 0, 0);
-    
+    // Check if limit exceeded
     if (currentUsage >= DAILY_REQUEST_LIMIT) {
         return {
             allowed: false,
             usage: currentUsage,
-            resetTime: tomorrow.toISOString()
+            limit: DAILY_REQUEST_LIMIT,
+            resetTime: new Date(new Date().setHours(24, 0, 0, 0)).toISOString()
         };
     }
     
     // Increment usage
     dailyUsage.set(key, currentUsage + 1);
     
+    // Cleanup old entries (run occasionally)
+    if (Math.random() < 0.1) {
+        cleanupOldEntries();
+    }
+    
     return {
         allowed: true,
-        usage: currentUsage,
-        resetTime: tomorrow.toISOString()
+        usage: currentUsage + 1,
+        limit: DAILY_REQUEST_LIMIT,
+        resetTime: new Date(new Date().setHours(24, 0, 0, 0)).toISOString()
     };
 }
 
 /**
- * Clean up old usage entries to prevent memory leaks
+ * Clean up old rate limit entries
  */
 function cleanupOldEntries() {
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date().toDateString();
+    const keysToDelete = [];
     
-    for (const [key, value] of dailyUsage.entries()) {
-        const [ip, date] = key.split('-');
-        if (date && date !== today) {
-            dailyUsage.delete(key);
+    for (const [key] of dailyUsage) {
+        if (!key.endsWith(today)) {
+            keysToDelete.push(key);
         }
     }
+    
+    keysToDelete.forEach(key => dailyUsage.delete(key));
 }
 
 /**
- * Validation helper for vibe input
+ * Validate vibe parameter
  */
 function isValidVibe(vibe) {
-    const validVibes = [
-        'gratitude', 'resilience', 'ambition', 'creativity', 
-        'serenity', 'courage', 'wisdom', 'joy'
-    ];
-    
+    const validVibes = ['gratitude', 'resilience', 'ambition', 'creativity', 'serenity', 'courage', 'wisdom', 'joy'];
     return validVibes.includes(vibe.toLowerCase());
 }
 
-// Add after the existing imports
+// Generate background image for quote
 const generateQuoteImage = async (quote, vibe, language) => {
-    try {
-        // For now, use Picsum (Lorem Picsum) which doesn't require API keys
-        // Generate a consistent image based on the vibe for better UX
-        const vibeSeeds = {
-            'gratitude': 1001,
-            'resilience': 1002, 
-            'ambition': 1003,
-            'creativity': 1004,
-            'serenity': 1005,
-            'courage': 1006,
-            'wisdom': 1007,
-            'joy': 1008
-        };
-        
-        const seed = vibeSeeds[vibe] || 1000;
-        const imageUrl = `https://picsum.photos/seed/${seed}/800/400`;
-        
-        console.log(`Generated background image for ${vibe}: ${imageUrl}`);
-        return imageUrl;
-    } catch (error) {
-        console.error('Image generation failed:', error);
-        return null;
-    }
-}; 
+    // Simplified version without authentication context
+    const vibeColors = {
+        gratitude: '#f4a261',
+        resilience: '#e76f51', 
+        ambition: '#2a9d8f',
+        creativity: '#e9c46a',
+        serenity: '#a8dadc',
+        courage: '#457b9d',
+        wisdom: '#f1faee',
+        joy: '#ffb3ba'
+    };
+    
+    return `data:image/svg+xml,${encodeURIComponent(`
+        <svg width="800" height="400" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:${vibeColors[vibe] || '#2a9d8f'};stop-opacity:0.8" />
+                    <stop offset="100%" style="stop-color:${vibeColors[vibe] || '#2a9d8f'};stop-opacity:0.3" />
+                </linearGradient>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#bg)"/>
+            <text x="50%" y="50%" text-anchor="middle" font-family="Inter, sans-serif" font-size="28" fill="white" opacity="0.9">
+                ${vibe.charAt(0).toUpperCase() + vibe.slice(1)} Quote
+            </text>
+        </svg>
+    `)}`; 
+};
