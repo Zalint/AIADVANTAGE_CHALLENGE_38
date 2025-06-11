@@ -1,6 +1,6 @@
 # ✨ Vibe Quotes
 
-A sophisticated, multilingual web application that generates personalized inspirational quotes using advanced AI. Features a two-step AI process with GPT-4o for generation and GPT-4.1-mini evaluation, supporting 7 languages with text-to-speech capabilities and automatic background image generation.
+A multilingual web application that generates personalized inspirational quotes using advanced AI. Features a two-step AI process with GPT-4o for generation and GPT-4.1-mini evaluation, supporting 7 languages with text-to-speech capabilities and automatic background image generation.
 
 ## 🌟 Key Features
 
@@ -20,7 +20,7 @@ A sophisticated, multilingual web application that generates personalized inspir
 - **Contextual Character Counters**: Character limits displayed in selected language
 - **Comprehensive Coverage**: Dashboard, preferences modal, and all user interactions translated
 
-### 🎯 8 Inspiring Vibes
+### 🎯 9 Inspiring Vibes
 Choose from carefully curated emotional themes:
 - 🙏 **Gratitude** - Appreciation and thankfulness
 - 💪 **Resilience** - Strength and perseverance  
@@ -30,6 +30,7 @@ Choose from carefully curated emotional themes:
 - ⚡ **Courage** - Bravery and boldness
 - 🦉 **Wisdom** - Knowledge and insight
 - 😊 **Joy** - Happiness and celebration
+- ❤️ **Love** - Compassion and connection
 
 ### 🎨 Beautiful User Experience
 - **Full-Screen Design**: Takes advantage of modern wide screens

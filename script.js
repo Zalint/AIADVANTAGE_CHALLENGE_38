@@ -21,7 +21,7 @@ class VibeQuotes {
                 stopBtn: "⏹️ Stop",
                 welcomeTitle: "Welcome to Vibe Quotes!",
                 welcomeText: "Choose your vibe above and generate your first inspiring quote. Our AI will create personalized quotes that match your mood and energy.",
-                feature1: "8 unique vibes to choose from",
+                feature1: "24 unique vibes to choose from",
                 feature2: "Available in 7 languages", 
                 feature3: "Text-to-speech support",
                 feature4: "Sign in to save your favorite quotes",
@@ -38,8 +38,19 @@ class VibeQuotes {
                     serenity: "🧘 Serenity",
                     courage: "⚡ Courage",
                     wisdom: "🦉 Wisdom",
-                    joy: "😊 Joy"
-                }
+                    joy: "😊 Joy",
+                    love: "❤️ Love",
+                    anger: "😡 Anger",
+                    sadness: "😢 Sadness",
+                    fear: "😱 Fear",
+                    disgust: "🤢 Disgust",
+                    anxiety: "😰 Anxiety",
+                    frustration: "😤 Frustration",
+                    guilt: "😔 Guilt",
+                    shame: "🙇‍♂️ Shame"
+                },
+                unlockButton: "🔓 Explore More Emotions",
+                unlockedVibes: "Unlocked Vibes"
             },
             french: {
                 title: "✨ Citations Vibe",
@@ -53,7 +64,7 @@ class VibeQuotes {
                 stopBtn: "⏹️ Arrêter",
                 welcomeTitle: "Bienvenue sur Citations Vibe!",
                 welcomeText: "Choisissez votre humeur ci-dessus et générez votre première citation inspirante. Notre IA créera des citations personnalisées qui correspondent à votre humeur et votre énergie.",
-                feature1: "8 ambiances uniques au choix",
+                feature1: "24 ambiances uniques au choix",
                 feature2: "Disponible en 7 langues",
                 feature3: "Support de synthèse vocale",
                 feature4: "Connectez-vous pour sauvegarder vos citations favorites",
@@ -67,11 +78,22 @@ class VibeQuotes {
                     resilience: "💪 Résilience",
                     ambition: "🚀 Ambition", 
                     creativity: "🎨 Créativité",
-                    serenity: "🧘 Sérénité",
-                    courage: "⚡ Courage",
+                    serenity: "🧘‍♀️ Sérénité",
+                    courage: "🦁 Courage",
                     wisdom: "🦉 Sagesse",
-                    joy: "😊 Joie"
-                }
+                    joy: "😊 Joie",
+                    love: "❤️ Amour",
+                    anger: "😡 Colère",
+                    sadness: "😢 Tristesse",
+                    fear: "😱 Peur",
+                    disgust: "🤢 Dégoût",
+                    anxiety: "😰 Anxiété",
+                    frustration: "😤 Frustration",
+                    guilt: "😔 Culpe",
+                    shame: "🙇‍♂️ Honte"
+                },
+                unlockButton: "🔓 Explorer Plus d'Émotions",
+                unlockedVibes: "Émotions Débloquées"
             },
             german: {
                 title: "✨ Vibe Zitate",
@@ -85,7 +107,7 @@ class VibeQuotes {
                 stopBtn: "⏹️ Stopp",
                 welcomeTitle: "Willkommen bei Vibe Zitate!",
                 welcomeText: "Wähle deine Stimmung oben und generiere dein erstes inspirierendes Zitat. Unsere KI erstellt personalisierte Zitate, die zu deiner Stimmung und Energie passen.",
-                feature1: "8 einzigartige Stimmungen zur Auswahl",
+                feature1: "24 einzigartige Stimmungen zur Auswahl",
                 feature2: "Verfügbar in 7 Sprachen",
                 feature3: "Text-zu-Sprache Unterstützung",
                 historyBtn: "📜 Vorherige Zitate",
@@ -98,11 +120,22 @@ class VibeQuotes {
                     resilience: "💪 Widerstandsfähigkeit",
                     ambition: "🚀 Ehrgeiz",
                     creativity: "🎨 Kreativität", 
-                    serenity: "🧘 Gelassenheit",
-                    courage: "⚡ Mut",
+                    serenity: "🧘‍♀️ Gelassenheit",
+                    courage: "🦁 Mut",
                     wisdom: "🦉 Weisheit",
-                    joy: "😊 Freude"
-                }
+                    joy: "😊 Freude",
+                    love: "❤️ Liebe",
+                    anger: "😡 Wut",
+                    sadness: "😢 Traurigkeit",
+                    fear: "😱 Angst",
+                    disgust: "🤢 Ekel",
+                    anxiety: "😰 Angst",
+                    frustration: "😤 Frustration",
+                    guilt: "😔 Schuldgefühle",
+                    shame: "🙇‍♂️ Scham"
+                },
+                unlockButton: "🔓 Weitere Emotionen Entdecken",
+                unlockedVibes: "Entsperrte Stimmungen"
             },
             spanish: {
                 title: "✨ Citas Vibe",
@@ -116,7 +149,7 @@ class VibeQuotes {
                 stopBtn: "⏹️ Parar",
                 welcomeTitle: "¡Bienvenido a Citas Vibe!",
                 welcomeText: "Elige tu vibra arriba y genera tu primera cita inspiradora. Nuestra IA creará citas personalizadas que coincidan con tu estado de ánimo y energía.",
-                feature1: "8 vibras únicas para elegir",
+                feature1: "24 vibras únicas para elegir",
                 feature2: "Disponible en 7 idiomas",
                 feature3: "Soporte de texto a voz",
                 historyBtn: "📜 Citas Anteriores",
@@ -129,11 +162,22 @@ class VibeQuotes {
                     resilience: "💪 Resistencia",
                     ambition: "🚀 Ambición",
                     creativity: "🎨 Creatividad",
-                    serenity: "🧘 Serenidad", 
-                    courage: "⚡ Coraje",
+                    serenity: "🧘‍♀️ Serenidad", 
+                    courage: "🦁 Coraje",
                     wisdom: "🦉 Sabiduría",
-                    joy: "😊 Alegría"
-                }
+                    joy: "😊 Alegría",
+                    love: "❤️ Amor",
+                    anger: "😡 Ira",
+                    sadness: "😢 Tristeza",
+                    fear: "😱 Miedo",
+                    disgust: "🤢 Asco",
+                    anxiety: "😰 Ansiedad",
+                    frustration: "😤 Frustración",
+                    guilt: "😔 Culpa",
+                    shame: "🙇‍♂️ Vergüenza"
+                },
+                unlockButton: "🔓 Explorar Más Emociones",
+                unlockedVibes: "Emociones Desbloqueadas"
             },
             portuguese: {
                 title: "✨ Citações Vibe",
@@ -147,7 +191,7 @@ class VibeQuotes {
                 stopBtn: "⏹️ Parar",
                 welcomeTitle: "Bem-vindo às Citações Vibe!",
                 welcomeText: "Escolha sua vibe acima e gere sua primeira citação inspiradora. Nossa IA criará citações personalizadas que combinam com seu humor e energia.",
-                feature1: "8 vibes únicas para escolher",
+                feature1: "24 vibes únicas para escolher",
                 feature2: "Disponível em 7 idiomas",
                 feature3: "Suporte de texto para fala",
                 historyBtn: "📜 Citações Anteriores",
@@ -160,11 +204,22 @@ class VibeQuotes {
                     resilience: "💪 Resistência",
                     ambition: "🚀 Ambição",
                     creativity: "🎨 Criatividade",
-                    serenity: "🧘 Serenidade",
-                    courage: "⚡ Coragem",
+                    serenity: "🧘‍♀️ Serenidade",
+                    courage: "🦁 Coragem",
                     wisdom: "🦉 Sabedoria",
-                    joy: "😊 Alegria"
-                }
+                    joy: "😊 Alegria",
+                    love: "❤️ Amor",
+                    anger: "😡 Raiva",
+                    sadness: "😢 Tristeza",
+                    fear: "😱 Medo",
+                    disgust: "🤢 Nojo",
+                    anxiety: "😰 Ansiedade",
+                    frustration: "😤 Frustração",
+                    guilt: "😔 Culpa",
+                    shame: "🙇‍♂️ Vergonha"
+                },
+                unlockButton: "🔓 Explorar Mais Emoções",
+                unlockedVibes: "Emoções Desbloqueadas"
             },
             italian: {
                 title: "✨ Citazioni Vibe",
@@ -178,7 +233,7 @@ class VibeQuotes {
                 stopBtn: "⏹️ Ferma",
                 welcomeTitle: "Benvenuto in Citazioni Vibe!",
                 welcomeText: "Scegli la tua vibe sopra e genera la tua prima citazione ispiratrice. La nostra IA creerà citazioni personalizzate che si adattano al tuo umore ed energia.",
-                feature1: "8 vibe uniche tra cui scegliere",
+                feature1: "24 vibe uniche tra cui scegliere",
                 feature2: "Disponibile in 7 lingue",
                 feature3: "Supporto di sintesi vocale",
                 historyBtn: "📜 Citazioni Precedenti",
@@ -191,11 +246,22 @@ class VibeQuotes {
                     resilience: "💪 Resistenza",
                     ambition: "🚀 Ambizione",
                     creativity: "🎨 Creatività",
-                    serenity: "🧘 Serenità",
-                    courage: "⚡ Coraggio",
+                    serenity: "🧘‍♀️ Serenità",
+                    courage: "🦁 Coraggio",
                     wisdom: "🦉 Saggezza",
-                    joy: "😊 Gioia"
-                }
+                    joy: "😊 Gioia",
+                    love: "❤️ Amore",
+                    anger: "😡 Rabbia",
+                    sadness: "😢 Tristezza",
+                    fear: "😱 Paura",
+                    disgust: "🤢 Disgusto",
+                    anxiety: "😰 Ansia",
+                    frustration: "😤 Frustrazione",
+                    guilt: "😔 Colpa",
+                    shame: "🙇‍♂️ Vergogna"
+                },
+                unlockButton: "🔓 Esplora Altre Emozioni",
+                unlockedVibes: "Emozioni Sbloccate"
             },
             slovak: {
                 title: "✨ Vibe Citáty",
@@ -209,9 +275,10 @@ class VibeQuotes {
                 stopBtn: "⏹️ Zastaviť",
                 welcomeTitle: "Vitajte v Vibe Citátoch!",
                 welcomeText: "Vyberte si vašu náladu vyššie a vygenerujte váš prvý inšpiratívny citát. Naša AI vytvorí personalizované citáty, ktoré sa hodia k vašej nálade a energii.",
-                feature1: "8 jedinečných nálad na výber",
+                feature1: "24 jedinečných nálad na výber",
                 feature2: "Dostupné v 7 jazykoch",
                 feature3: "Podpora syntézy reči",
+                feature4: "Prihláste sa, aby ste si mohli uložiť obľúbené citáty",
                 historyBtn: "📜 Predchádzajúce Citáty",
                 historyTitle: "História Citátov",
                 historyEmpty1: "Zatiaľ žiadne citáty!",
@@ -222,11 +289,22 @@ class VibeQuotes {
                     resilience: "💪 Odolnosť",
                     ambition: "🚀 Ambícia",
                     creativity: "🎨 Kreativita",
-                    serenity: "🧘 Pokoj",
-                    courage: "⚡ Odvaha",
+                    serenity: "🧘‍♀️ Pokoj",
+                    courage: "🦁 Odvaha",
                     wisdom: "🦉 Múdrosť",
-                    joy: "😊 Radosť"
-                }
+                    joy: "😊 Radosť",
+                    love: "❤️ Láska",
+                    anger: "😡 Hnev",
+                    sadness: "😢 Smútok",
+                    fear: "😱 Strach",
+                    disgust: "🤢 Odpor",
+                    anxiety: "😰 Úzkosť",
+                    frustration: "😤 Frustrácia",
+                    guilt: "😔 Vina",
+                    shame: "🙇‍♂️ Hanba"
+                },
+                unlockButton: "🔓 Preskúmať Viac Emócií",
+                unlockedVibes: "Odomknuté Emócie"
             }
         };
         
@@ -269,6 +347,9 @@ class VibeQuotes {
         this.historyList = document.getElementById('history-list');
         this.clearHistoryBtn = document.getElementById('clear-history');
 
+        // Unlock button element
+        this.unlockBtn = document.getElementById('unlock-btn');
+
         // State
         this.isLoading = false;
         this.currentVibe = '';
@@ -278,6 +359,10 @@ class VibeQuotes {
         this.isSpeaking = false;
         this.isHistoryVisible = false;
         this.hasGeneratedQuote = false;
+
+        // Negative vibes unlock state
+        this.negativeVibes = ['anger', 'sadness', 'fear', 'disgust', 'anxiety', 'frustration', 'guilt', 'shame'];
+        this.negativeVibesUnlocked = this.loadNegativeVibesState();
 
         // Rate limiting
         this.lastRequestTime = 0;
@@ -311,6 +396,9 @@ class VibeQuotes {
         // Check if user has generated quotes before and show welcome message if needed
         this.checkWelcomeStatus();
         
+        // Initialize negative vibes state
+        this.initializeNegativeVibes();
+        
         // Vibe avatars and messages
         this.vibeAvatars = {
             'gratitude': { avatar: '🙏', message: 'Finding grateful wisdom...' },
@@ -319,8 +407,25 @@ class VibeQuotes {
             'creativity': { avatar: '🎨', message: 'Painting with imagination...' },
             'serenity': { avatar: '🧘‍♀️', message: 'Finding peaceful thoughts...' },
             'courage': { avatar: '🦁', message: 'Summoning brave hearts...' },
-            'wisdom': { avatar: '🧙‍♂️', message: 'Consulting ancient wisdom...' },
-            'joy': { avatar: '😊', message: 'Spreading happy vibes...' }
+            'wisdom': { avatar: '🦉', message: 'Consulting ancient wisdom...' },
+            'joy': { avatar: '😊', message: 'Spreading happy vibes...' },
+            'love': { avatar: '❤️', message: 'Sharing love...' },
+            'hope': { avatar: '🌅', message: 'Bringing hope...' },
+            'compassion': { avatar: '🤗', message: 'Embracing compassion...' },
+            'confidence': { avatar: '💎', message: 'Building confidence...' },
+            'forgiveness': { avatar: '🕊️', message: 'Finding forgiveness...' },
+            'spirituality': { avatar: '🌟', message: 'Seeking spiritual wisdom...' },
+            'humor': { avatar: '😄', message: 'Adding some humor...' },
+            'curiosity': { avatar: '🔍', message: 'Exploring curiosity...' },
+            // Negative vibes
+            'anger': { avatar: '😡', message: 'Transforming anger into action...' },
+            'sadness': { avatar: '😢', message: 'Navigating sadness with care...' },
+            'fear': { avatar: '😱', message: 'Finding courage amid fear...' },
+            'disgust': { avatar: '🤢', message: 'Turning disgust into boundaries...' },
+            'anxiety': { avatar: '😰', message: 'Calming anxious thoughts...' },
+            'frustration': { avatar: '😤', message: 'Converting frustration to energy...' },
+            'guilt': { avatar: '😔', message: 'Learning and growing beyond guilt...' },
+            'shame': { avatar: '🙇‍♂️', message: 'Reclaiming self-worth beyond shame...' }
         };
 
         // Initialize contextual data
@@ -408,6 +513,13 @@ class VibeQuotes {
         if (this.clearHistoryBtn) {
             this.clearHistoryBtn.addEventListener('click', () => {
                 this.clearHistory();
+            });
+        }
+
+        // Unlock button
+        if (this.unlockBtn) {
+            this.unlockBtn.addEventListener('click', () => {
+                this.unlockNegativeVibes();
             });
         }
 
@@ -1225,6 +1337,9 @@ class VibeQuotes {
             if (document.title) {
                 document.title = t.title + " - AI Inspirational Quote Generator";
             }
+            
+            // Update negative vibes translations
+            this.updateNegativeVibesTranslation();
         } catch (error) {
             console.error('Translation error:', error);
             // Don't break the app if translation fails
@@ -1430,8 +1545,15 @@ class VibeQuotes {
     }
 
     getRandomVibe() {
-        const vibes = ['gratitude', 'resilience', 'ambition', 'creativity', 'serenity', 'courage', 'wisdom', 'joy'];
-        return vibes[Math.floor(Math.random() * vibes.length)];
+        // All positive vibes available to everyone
+        const positiveVibes = ['gratitude', 'resilience', 'ambition', 'creativity', 'serenity', 'courage', 'wisdom', 'joy', 'love', 'hope', 'compassion', 'confidence', 'forgiveness', 'spirituality', 'humor', 'curiosity'];
+        
+        // If negative vibes are unlocked, include them all
+        const allVibes = this.negativeVibesUnlocked 
+            ? [...positiveVibes, ...this.negativeVibes]
+            : positiveVibes;
+            
+        return allVibes[Math.floor(Math.random() * allVibes.length)];
     }
 
     cleanPreloadCache() {
@@ -1554,7 +1676,24 @@ class VibeQuotes {
             'serenity': '🧘‍♀️',
             'courage': '⚡',
             'wisdom': '🦉',
-            'joy': '😊'
+            'joy': '😊',
+            'love': '❤️',
+            'hope': '🌅',
+            'compassion': '🤗',
+            'confidence': '💎',
+            'forgiveness': '🕊️',
+            'spirituality': '🌟',
+            'humor': '😄',
+            'curiosity': '🔍',
+            // Negative vibes
+            'anger': '😡',
+            'sadness': '😢',
+            'fear': '😱',
+            'disgust': '🤢',
+            'anxiety': '😰',
+            'frustration': '😤',
+            'guilt': '😔',
+            'shame': '🙇‍♂️'
         };
 
         return `
@@ -1963,6 +2102,105 @@ class VibeQuotes {
             // Still update UI on error
             this.showAuthButtons();
         }
+    }
+
+    loadNegativeVibesState() {
+        try {
+            return JSON.parse(localStorage.getItem('negativeVibesUnlocked')) || false;
+        } catch (error) {
+            console.error('Error loading negative vibes state:', error);
+            return false;
+        }
+    }
+
+    saveNegativeVibesState() {
+        try {
+            localStorage.setItem('negativeVibesUnlocked', JSON.stringify(this.negativeVibesUnlocked));
+        } catch (error) {
+            console.error('Error saving negative vibes state:', error);
+        }
+    }
+
+    initializeNegativeVibes() {
+        // Add negative vibe options to the select dropdown (initially hidden)
+        if (this.vibeSelect) {
+            const t = this.translations[this.currentLanguage] || this.translations.english;
+            
+            // Add negative vibe options (initially disabled/hidden style)
+            this.negativeVibes.forEach(vibe => {
+                const existingOption = this.vibeSelect.querySelector(`option[value="${vibe}"]`);
+                if (!existingOption) {
+                    const option = document.createElement('option');
+                    option.value = vibe;
+                    option.textContent = t.vibes[vibe] || vibe;
+                    option.className = 'negative-vibe-option';
+                    option.style.display = this.negativeVibesUnlocked ? 'block' : 'none';
+                    this.vibeSelect.appendChild(option);
+                }
+            });
+        }
+
+        // Update unlock button visibility and text
+        this.updateUnlockButton();
+    }
+
+    updateUnlockButton() {
+        if (!this.unlockBtn) return;
+
+        const t = this.translations[this.currentLanguage] || this.translations.english;
+        
+        if (this.negativeVibesUnlocked) {
+            this.unlockBtn.style.display = 'none';
+        } else {
+            this.unlockBtn.style.display = 'block';
+            this.unlockBtn.textContent = t.unlockButton || '🔓 Explore More Emotions';
+        }
+    }
+
+    unlockNegativeVibes() {
+        // Unlock the negative vibes
+        this.negativeVibesUnlocked = true;
+        this.saveNegativeVibesState();
+
+        // Show the negative vibe options in the dropdown
+        if (this.vibeSelect) {
+            const negativeOptions = this.vibeSelect.querySelectorAll('.negative-vibe-option');
+            negativeOptions.forEach(option => {
+                option.style.display = 'block';
+            });
+        }
+
+        // Hide the unlock button
+        this.updateUnlockButton();
+
+        // Show success message
+        const t = this.translations[this.currentLanguage] || this.translations.english;
+        this.showMessage(t.unlockedVibes || 'Negative emotions unlocked! You can now explore deeper emotional quotes.', 'success');
+
+        // Add visual effect to show the unlock
+        if (this.vibeSelect) {
+            this.vibeSelect.classList.add('shimmer');
+            setTimeout(() => {
+                this.vibeSelect.classList.remove('shimmer');
+            }, 1000);
+        }
+    }
+
+    updateNegativeVibesTranslation() {
+        if (!this.vibeSelect) return;
+
+        const t = this.translations[this.currentLanguage] || this.translations.english;
+        
+        // Update negative vibe option texts
+        this.negativeVibes.forEach(vibe => {
+            const option = this.vibeSelect.querySelector(`option[value="${vibe}"]`);
+            if (option && t.vibes[vibe]) {
+                option.textContent = t.vibes[vibe];
+            }
+        });
+
+        // Update unlock button text
+        this.updateUnlockButton();
     }
 }
 

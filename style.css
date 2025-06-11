@@ -288,6 +288,98 @@ body {
     50% { background-position: 100% 50%; }
 }
 
+/* Unlock button */
+.unlock-btn {
+    width: 100%;
+    padding: var(--space-xs) var(--space-lg);
+    background: linear-gradient(135deg, var(--accent-secondary), var(--accent-tertiary));
+    background-size: 200% 200%;
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    transform: translateY(0);
+    position: relative;
+    overflow: hidden;
+    margin-bottom: var(--space-sm);
+    opacity: 0.9;
+}
+
+.unlock-btn:hover {
+    background: linear-gradient(135deg, var(--accent-tertiary), var(--accent-secondary));
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(69, 183, 209, 0.3);
+    opacity: 1;
+}
+
+.unlock-btn:active {
+    transform: translateY(0);
+}
+
+/* Hidden state for unlock button */
+.unlock-btn[style*="none"] {
+    display: none !important;
+}
+
+/* Dashboard unlock button */
+.unlock-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: var(--space-lg);
+    width: 100%;
+}
+
+.unlock-emotions-btn {
+    padding: var(--space-sm) var(--space-lg);
+    background: linear-gradient(135deg, var(--accent-secondary), var(--accent-tertiary));
+    background-size: 200% 200%;
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    transform: translateY(0);
+    position: relative;
+    overflow: hidden;
+    opacity: 0.9;
+    box-shadow: 0 4px 15px rgba(69, 183, 209, 0.2);
+}
+
+.unlock-emotions-btn:hover {
+    background: linear-gradient(135deg, var(--accent-tertiary), var(--accent-secondary));
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(69, 183, 209, 0.4);
+    opacity: 1;
+}
+
+.unlock-emotions-btn:active {
+    transform: translateY(0);
+}
+
+/* Hidden state for dashboard unlock button */
+.unlock-emotions-btn[style*="none"] {
+    display: none !important;
+}
+
+/* Shimmer effect for unlock buttons */
+.unlock-btn.shimmer,
+.unlock-emotions-btn.shimmer {
+    background: linear-gradient(90deg, rgba(139, 69, 19, 0.8) 0%, rgba(205, 133, 63, 0.9) 50%, rgba(139, 69, 19, 0.8) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
 /* Loader */
 .loader {
     display: none;
@@ -311,6 +403,9 @@ body {
     animation: thinking 2s ease-in-out infinite;
     display: block;
     margin: 0 auto;
+    font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+    font-variant-emoji: emoji;
+    text-rendering: optimizeQuality;
 }
 
 .thinking-bubbles {
@@ -1418,4 +1513,5 @@ body {
     .auth-form {
         padding: 0 20px 20px;
     }
-} 
+}
+

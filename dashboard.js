@@ -9,6 +9,10 @@ class DashboardApp {
         this.clockInterval = null; // For real-time clock
         this.userLocation = null; // Cache user location
         
+        // Negative vibes unlock state
+        this.negativeVibes = ['anger', 'sadness', 'fear', 'disgust', 'anxiety', 'frustration', 'guilt', 'shame'];
+        this.negativeVibesUnlocked = this.loadNegativeVibesState();
+        
         // Initialize translations
         this.translations = {
             english: {
@@ -47,7 +51,24 @@ class DashboardApp {
                     serenity: "Serenity",
                     courage: "Courage",
                     wisdom: "Wisdom",
-                    joy: "Joy"
+                    joy: "Joy",
+                    love: "Love",
+                    hope: "Hope",
+                    compassion: "Compassion",
+                    confidence: "Confidence",
+                    forgiveness: "Forgiveness",
+                    spirituality: "Spirituality",
+                    humor: "Humor",
+                    curiosity: "Curiosity",
+                    // Negative vibes
+                    anger: "Anger",
+                    sadness: "Sadness",
+                    fear: "Fear",
+                    disgust: "Disgust",
+                    anxiety: "Anxiety",
+                    frustration: "Frustration",
+                    guilt: "Guilt",
+                    shame: "Shame"
                 },
                 vibeDescriptions: {
                     gratitude: "Appreciate life's blessings",
@@ -68,7 +89,9 @@ class DashboardApp {
                 longerQuotes: "Longer Quotes",
                 longerQuotesDesc: "Generate multi-sentence quotes with deeper insights",
                 savePreferences: "Save Preferences",
-                clearContext: "Clear Context"
+                clearContext: "Clear Context",
+                unlockButton: "🔓 Explore More Emotions",
+                empathyCopilotButtonTitle: "Talk to a compassionate agent who will find what's alive in you following NVC principles"
             },
             french: {
                 dashboardTitle: "✨ Citations Vibe",
@@ -106,7 +129,24 @@ class DashboardApp {
                     serenity: "Sérénité",
                     courage: "Courage",
                     wisdom: "Sagesse",
-                    joy: "Joie"
+                    joy: "Joie",
+                    love: "Amour",
+                    hope: "Espoir",
+                    compassion: "Compassion",
+                    confidence: "Confiance",
+                    forgiveness: "Pardon",
+                    spirituality: "Spirituel",
+                    humor: "Humour",
+                    curiosity: "Curiosité",
+                    // Negative vibes
+                    anger: "Colère",
+                    sadness: "Tristesse",
+                    fear: "Fears",
+                    disgust: "Dégoût",
+                    anxiety: "Anxiété",
+                    frustration: "Frustration",
+                    guilt: "Craintes",
+                    shame: "Honte"
                 },
                 vibeDescriptions: {
                     gratitude: "Appréciez les bénédictions de la vie",
@@ -127,7 +167,9 @@ class DashboardApp {
                 longerQuotes: "Citations Plus Longues",
                 longerQuotesDesc: "Générer des citations multi-phrases avec des insights plus profonds",
                 savePreferences: "Sauvegarder les Préférences",
-                clearContext: "Effacer le Contexte"
+                clearContext: "Effacer le Contexte",
+                unlockButton: "🔓 Explorer Plus d'Émotions",
+                empathyCopilotButtonTitle: "Parlez à un agent compatissant qui trouvera ce qui vit en vous selon les principes de la CNV"
             },
             german: {
                 dashboardTitle: "✨ Vibe Zitate",
@@ -165,7 +207,24 @@ class DashboardApp {
                     serenity: "Gelassenheit",
                     courage: "Mut",
                     wisdom: "Weisheit",
-                    joy: "Freude"
+                    joy: "Freude",
+                    love: "Liebe",
+                    hope: "Hoffnung",
+                    compassion: "Mitgefühl",
+                    confidence: "Vertrauen",
+                    forgiveness: "Vergebung",
+                    spirituality: "Spiritualität",
+                    humor: "Humor",
+                    curiosity: "Neugier",
+                    // Negative vibes
+                    anger: "Wut",
+                    sadness: "Traurigkeit",
+                    fear: "Angst",
+                    disgust: "Ekel",
+                    anxiety: "Ängstlichkeit",
+                    frustration: "Frustration",
+                    guilt: "Schuldgefühle",
+                    shame: "Scham"
                 },
                 vibeDescriptions: {
                     gratitude: "Schätze die Segnungen des Lebens",
@@ -186,7 +245,9 @@ class DashboardApp {
                 longerQuotes: "Längere Zitate",
                 longerQuotesDesc: "Mehrsätzige Zitate mit tieferen Einsichten generieren",
                 savePreferences: "Einstellungen Speichern",
-                clearContext: "Kontext Löschen"
+                clearContext: "Kontext Löschen",
+                unlockButton: "🔓 Weitere Emotionen Entdecken",
+                empathyCopilotButtonTitle: "Sprechen Sie mit einem mitfühlenden Agenten, der herausfindet, was in Ihnen lebendig ist, nach GFK-Prinzipien"
             },
             spanish: {
                 dashboardTitle: "✨ Citas Vibe",
@@ -224,7 +285,24 @@ class DashboardApp {
                     serenity: "Serenidad",
                     courage: "Coraje",
                     wisdom: "Sabiduría",
-                    joy: "Alegría"
+                    joy: "Alegría",
+                    love: "Amor",
+                    hope: "Esperanza",
+                    compassion: "Compasión",
+                    confidence: "Confianza",
+                    forgiveness: "Perdón",
+                    spirituality: "Espiritualidad",
+                    humor: "Humor",
+                    curiosity: "Curiosidad",
+                    // Negative vibes
+                    anger: "Enojo",
+                    sadness: "Tristeza",
+                    fear: "Miedo",
+                    disgust: "Desprecio",
+                    anxiety: "Ansiedad",
+                    frustration: "Frustración",
+                    guilt: "Pena",
+                    shame: "Vergüenza"
                 },
                 vibeDescriptions: {
                     gratitude: "Aprecia las bendiciones de la vida",
@@ -245,7 +323,9 @@ class DashboardApp {
                 longerQuotes: "Citas Más Largas",
                 longerQuotesDesc: "Generar citas de múltiples oraciones con insights más profundos",
                 savePreferences: "Guardar Preferencias",
-                clearContext: "Limpiar Contexto"
+                clearContext: "Limpiar Contexto",
+                unlockButton: "🔓 Explorar Más Emociones",
+                empathyCopilotButtonTitle: "Habla con un agente compasivo que encontrará lo que está vivo en ti siguiendo los principios de CNV"
             },
             portuguese: {
                 dashboardTitle: "✨ Citações Vibe",
@@ -283,7 +363,24 @@ class DashboardApp {
                     serenity: "Serenidade",
                     courage: "Coragem",
                     wisdom: "Sabedoria",
-                    joy: "Alegria"
+                    joy: "Alegria",
+                    love: "Amor",
+                    hope: "Esperança",
+                    compassion: "Compaixão",
+                    confidence: "Confiança",
+                    forgiveness: "Perdão",
+                    spirituality: "Espiritualidade",
+                    humor: "Humor",
+                    curiosity: "Curiosidade",
+                    // Negative vibes
+                    anger: "Raiva",
+                    sadness: "Tristeza",
+                    fear: "Medo",
+                    disgust: "Desgosto",
+                    anxiety: "Ansiedade",
+                    frustration: "Frustração",
+                    guilt: "Pena",
+                    shame: "Vergonha"
                 },
                 vibeDescriptions: {
                     gratitude: "Aprecie as bênçãos da vida",
@@ -304,7 +401,9 @@ class DashboardApp {
                 longerQuotes: "Citações Mais Longas",
                 longerQuotesDesc: "Gerar citações de múltiplas frases com insights mais profundos",
                 savePreferences: "Salvar Preferências",
-                clearContext: "Limpar Contexto"
+                clearContext: "Limpar Contexto",
+                unlockButton: "🔓 Explorar Mais Emoções",
+                empathyCopilotButtonTitle: "Converse com um agente compassivo que encontrará o que está vivo em você seguindo os princípios da CNV"
             },
             italian: {
                 dashboardTitle: "✨ Citazioni Vibe",
@@ -342,7 +441,24 @@ class DashboardApp {
                     serenity: "Serenità",
                     courage: "Coraggio",
                     wisdom: "Saggezza",
-                    joy: "Gioia"
+                    joy: "Gioia",
+                    love: "Amore",
+                    hope: "Speranza",
+                    compassion: "Compianza",
+                    confidence: "Confidenza",
+                    forgiveness: "Perdono",
+                    spirituality: "Spiritualità",
+                    humor: "Humor",
+                    curiosity: "Curiosità",
+                    // Negative vibes
+                    anger: "Rabbia",
+                    sadness: "Tristezza",
+                    fear: "Paura",
+                    disgust: "Disgusto",
+                    anxiety: "Ansia",
+                    frustration: "Frustrazione",
+                    guilt: "Pena",
+                    shame: "Scuse"
                 },
                 vibeDescriptions: {
                     gratitude: "Apprezza le benedizioni della vita",
@@ -363,7 +479,9 @@ class DashboardApp {
                 longerQuotes: "Citazioni Più Lunghe",
                 longerQuotesDesc: "Genera citazioni multi-frase con intuizioni più profonde",
                 savePreferences: "Salva Preferenze",
-                clearContext: "Cancella Contesto"
+                clearContext: "Cancella Contesto",
+                unlockButton: "🔓 Esplora Altre Emozioni",
+                empathyCopilotButtonTitle: "Parla con un agente compassionevole che troverà ciò che è vivo in te seguendo i principi della CNV"
             },
             slovak: {
                 dashboardTitle: "✨ Vibe Citáty",
@@ -401,7 +519,24 @@ class DashboardApp {
                     serenity: "Pokoj",
                     courage: "Odvaha",
                     wisdom: "Múdrosť",
-                    joy: "Radosť"
+                    joy: "Radosť",
+                    love: "Milovanie",
+                    hope: "Nadzieja",
+                    compassion: "Milovanie",
+                    confidence: "Dôvera",
+                    forgiveness: "Odpustenie",
+                    spirituality: "Duchovnosť",
+                    humor: "Humor",
+                    curiosity: "Záujem",
+                    // Negative vibes
+                    anger: "Nevýhoda",
+                    sadness: "Tristina",
+                    fear: "Strach",
+                    disgust: "Znechutenie",
+                    anxiety: "Nervóza",
+                    frustration: "Frustrácia",
+                    guilt: "Zločin",
+                    shame: "Dôvera"
                 },
                 vibeDescriptions: {
                     gratitude: "Oceňte požehnania života",
@@ -422,7 +557,9 @@ class DashboardApp {
                 longerQuotes: "Dlhšie Citáty",
                 longerQuotesDesc: "Generovať viacvetné citáty s hlbšími poznatkami",
                 savePreferences: "Uložiť Nastavenia",
-                clearContext: "Vymazať Kontext"
+                clearContext: "Vymazať Kontext",
+                unlockButton: "🔓 Preskúmať Viac Emócií",
+                empathyCopilotButtonTitle: "Rozprávajte sa so súcitným agentom, ktorý nájde to, čo vo vás žije podľa princípov NKK"
             }
         };
         
@@ -649,10 +786,23 @@ class DashboardApp {
             this.applyLanguage(e.target.value);
         });
 
+        // Empathy Copilot
+        document.getElementById('empathy-copilot-btn').addEventListener('click', () => {
+            this.openEmpathyCopilotModal();
+        });
+
         // Sign out
         document.getElementById('sign-out-btn').addEventListener('click', async () => {
             await this.signOut();
         });
+
+        // Unlock negative vibes button
+        const unlockBtn = document.getElementById('unlock-emotions-btn');
+        if (unlockBtn) {
+            unlockBtn.addEventListener('click', () => {
+                this.unlockNegativeVibes();
+            });
+        }
 
         // Vibe card clicks
         document.querySelectorAll('.vibe-card').forEach(card => {
@@ -704,8 +854,20 @@ class DashboardApp {
             this.closePreferencesModal();
         });
 
+        // Empathy Copilot Modal
+        document.getElementById('close-empathy-copilot-modal').addEventListener('click', () => {
+            this.closeEmpathyCopilotModal();
+        });
+
+        document.getElementById('empathy-copilot-overlay').addEventListener('click', () => {
+            this.closeEmpathyCopilotModal();
+        });
+
         // User Preferences
         this.initUserPreferences();
+        
+        // Initialize negative vibes unlock system
+        this.initNegativeVibesUnlock();
     }
 
     async generateQuote(vibe) {
@@ -786,14 +948,33 @@ class DashboardApp {
 
     showQuoteLoader(vibe) {
         const vibeAvatars = {
+            // Original vibes
             'gratitude': '🙏',
             'resilience': '💪',
             'ambition': '🚀',
             'creativity': '🎨',
-            'serenity': '🧘',
-            'courage': '⚡',
+            'serenity': '🧘‍♀️',
+            'courage': '🦁',
             'wisdom': '🦉',
-            'joy': '😊'
+            'joy': '😊',
+            'love': '❤️',
+            // Premium vibes
+            'hope': '🌅',
+            'compassion': '🤗',
+            'confidence': '💎',
+            'forgiveness': '🕊️',
+            'spirituality': '🌟',
+            'humor': '😄',
+            'curiosity': '🔍',
+            // Negative vibes
+            'anger': '😡',
+            'sadness': '😢',
+            'fear': '😱',
+            'disgust': '🤢',
+            'anxiety': '😰',
+            'frustration': '😤',
+            'guilt': '😔',
+            'shame': '🙇‍♂️'
         };
 
         document.getElementById('quote-loader').style.display = 'block';
@@ -1300,6 +1481,15 @@ class DashboardApp {
                 contextCounter.innerHTML = `${currentCount}/200 ${t.characters}`;
             }
             
+            // Update unlock button text
+            this.updateUnlockButtonText();
+            
+            // Update empathy copilot button title
+            const empathyCopilotBtn = document.getElementById('empathy-copilot-btn');
+            if (empathyCopilotBtn && t.empathyCopilotButtonTitle) {
+                empathyCopilotBtn.setAttribute('title', t.empathyCopilotButtonTitle);
+            }
+            
         } catch (error) {
             console.error('Dashboard translation error:', error);
         }
@@ -1599,6 +1789,136 @@ class DashboardApp {
     closePreferencesModal() {
         document.getElementById('preferences-modal').style.display = 'none';
         document.body.style.overflow = ''; // Restore scrolling
+    }
+
+    // Negative vibes unlock system
+    initNegativeVibesUnlock() {
+        this.loadNegativeVibesState();
+        this.updateNegativeVibesDisplay();
+        this.updateUnlockButtonText();
+    }
+
+    loadNegativeVibesState() {
+        this.negativeVibesUnlocked = localStorage.getItem('negativeVibesUnlocked') === 'true';
+    }
+
+    saveNegativeVibesState() {
+        localStorage.setItem('negativeVibesUnlocked', this.negativeVibesUnlocked.toString());
+    }
+
+    updateUnlockButtonText() {
+        const unlockBtn = document.getElementById('unlock-emotions-btn');
+        if (!unlockBtn) return;
+
+        const t = this.translations[this.currentLanguage] || this.translations.english;
+        
+        if (this.negativeVibesUnlocked) {
+            unlockBtn.style.display = 'none';
+        } else {
+            unlockBtn.style.display = 'block';
+            unlockBtn.textContent = t.unlockButton || '🔓 Explorer d\'autres émotions';
+        }
+    }
+
+    updateNegativeVibesDisplay() {
+        const negativeVibeCards = document.querySelectorAll('.vibe-card.negative-vibe');
+        negativeVibeCards.forEach(card => {
+            if (this.negativeVibesUnlocked) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    unlockNegativeVibes() {
+        const unlockBtn = document.getElementById('unlock-emotions-btn');
+        if (!unlockBtn || this.negativeVibesUnlocked) return;
+
+        // Add shimmer effect
+        unlockBtn.classList.add('shimmer');
+        unlockBtn.disabled = true;
+        
+        setTimeout(() => {
+            this.negativeVibesUnlocked = true;
+            this.saveNegativeVibesState();
+            
+            // Hide unlock button
+            unlockBtn.style.display = 'none';
+            
+            // Show negative vibe cards with animation
+            this.updateNegativeVibesDisplay();
+            
+            // Show success message
+            this.showMessage('🔓 Negative emotions unlocked! You can now explore these deeper feelings.', 'success');
+            
+            unlockBtn.classList.remove('shimmer');
+            unlockBtn.disabled = false;
+        }, 1000);
+    }
+
+    showMessage(message, type = 'info') {
+        // Create message element
+        const messageEl = document.createElement('div');
+        messageEl.className = `message message-${type}`;
+        messageEl.textContent = message;
+        
+        // Style the message
+        messageEl.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            max-width: 300px;
+        `;
+        
+        document.body.appendChild(messageEl);
+        
+        // Animate in
+        setTimeout(() => {
+            messageEl.style.transform = 'translateX(0)';
+        }, 100);
+        
+        // Remove after delay
+        setTimeout(() => {
+            messageEl.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+                if (messageEl.parentNode) {
+                    document.body.removeChild(messageEl);
+                }
+            }, 300);
+        }, 3000);
+    }
+
+    // Empathy Copilot Modal Methods
+    openEmpathyCopilotModal() {
+        const modal = document.getElementById('empathy-copilot-modal');
+        modal.style.display = 'flex';
+        setTimeout(() => {
+            modal.classList.add('active');
+        }, 10);
+        
+        // Prevent body scroll
+        document.body.style.overflow = 'hidden';
+    }
+
+    closeEmpathyCopilotModal() {
+        const modal = document.getElementById('empathy-copilot-modal');
+        modal.classList.remove('active');
+        
+        setTimeout(() => {
+            modal.style.display = 'none';
+            // Restore body scroll
+            document.body.style.overflow = '';
+        }, 300);
     }
 }
 

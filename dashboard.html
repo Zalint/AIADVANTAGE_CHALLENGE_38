@@ -44,10 +44,14 @@
                     <div id="user-menu" class="user-menu">
                         <img id="user-avatar" class="user-avatar" src="" alt="User">
                         <span id="user-name" class="user-name"></span>
+                        <span class="dropdown-arrow">▼</span>
                         <div class="user-dropdown">
                             <button id="sign-out-btn" class="dropdown-item">🚪 Sign Out</button>
                         </div>
                     </div>
+                    <button id="empathy-copilot-btn" class="empathy-copilot-btn" data-i18n-title="empathyCopilotButtonTitle" title="Talk to a compassionate agent who will find what's alive in you following NVC principles">
+                        <span class="empathy-copilot-icon">💝</span>
+                    </button>
                 </div>
             </div>
         </header>
@@ -106,6 +110,14 @@
                             <div class="stat-label">Day Streak</div>
                         </div>
                     </div>
+                    <div class="stat-card achievement-card">
+                        <div class="stat-icon" id="current-badge-icon">🌱</div>
+                        <div class="stat-content">
+                            <div class="stat-number" id="current-badge-name">First Steps</div>
+                            <div class="stat-label">Current Badge</div>
+                            <div class="badge-mini-progress" id="badge-mini-progress">0/1</div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -114,6 +126,13 @@
                 <div class="section-header">
                     <h2>🎭 Choose Your Vibe</h2>
                     <p>Click on a vibe card to generate an inspiring quote</p>
+                </div>
+                
+                <!-- Unlock Negative Vibes Button -->
+                <div class="unlock-container">
+                    <button id="unlock-emotions-btn" class="unlock-emotions-btn">
+                        🔓 Explorer d'autres émotions
+                    </button>
                 </div>
                 
                 <div class="vibe-grid">
@@ -162,7 +181,7 @@
                     </div>
 
                     <div class="vibe-card" data-vibe="serenity">
-                        <div class="vibe-icon">🧘</div>
+                        <div class="vibe-icon">🧘‍♀️</div>
                         <div class="vibe-content">
                             <h3 class="vibe-title">Serenity</h3>
                             <p class="vibe-description">Find inner peace</p>
@@ -173,7 +192,7 @@
                     </div>
 
                     <div class="vibe-card" data-vibe="courage">
-                        <div class="vibe-icon">⚡</div>
+                        <div class="vibe-icon">🦁</div>
                         <div class="vibe-content">
                             <h3 class="vibe-title">Courage</h3>
                             <p class="vibe-description">Face your fears</p>
@@ -198,7 +217,185 @@
                         <div class="vibe-icon">😊</div>
                         <div class="vibe-content">
                             <h3 class="vibe-title">Joy</h3>
-                            <p class="vibe-description">Celebrate life's moments</p>
+                            <p class="vibe-description">Celebrate happiness</p>
+                            <div class="vibe-stats">
+                                <span class="quote-count">0 quotes</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="vibe-card" data-vibe="love">
+                        <div class="vibe-icon">❤️</div>
+                        <div class="vibe-content">
+                            <h3 class="vibe-title">Love</h3>
+                            <p class="vibe-description">Share love and compassion</p>
+                            <div class="vibe-stats">
+                                <span class="quote-count">0 quotes</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Premium Vibes (Logged Users Only) -->
+                    <div class="vibe-card premium" data-vibe="hope">
+                        <div class="vibe-icon">🌅</div>
+                        <div class="vibe-content">
+                            <h3 class="vibe-title">Hope</h3>
+                            <p class="vibe-description">For moments of uncertainty or renewal</p>
+                            <div class="vibe-stats">
+                                <span class="quote-count">0 quotes</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="vibe-card premium" data-vibe="compassion">
+                        <div class="vibe-icon">🤗</div>
+                        <div class="vibe-content">
+                            <h3 class="vibe-title">Compassion</h3>
+                            <p class="vibe-description">Focused on empathy and understanding</p>
+                            <div class="vibe-stats">
+                                <span class="quote-count">0 quotes</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="vibe-card premium" data-vibe="confidence">
+                        <div class="vibe-icon">💎</div>
+                        <div class="vibe-content">
+                            <h3 class="vibe-title">Confidence</h3>
+                            <p class="vibe-description">To strengthen self-esteem</p>
+                            <div class="vibe-stats">
+                                <span class="quote-count">0 quotes</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="vibe-card premium" data-vibe="forgiveness">
+                        <div class="vibe-icon">🕊️</div>
+                        <div class="vibe-content">
+                            <h3 class="vibe-title">Forgiveness</h3>
+                            <p class="vibe-description">For personal or relational reflections</p>
+                            <div class="vibe-stats">
+                                <span class="quote-count">0 quotes</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="vibe-card premium" data-vibe="spirituality">
+                        <div class="vibe-icon">🌟</div>
+                        <div class="vibe-content">
+                            <h3 class="vibe-title">Spirituality</h3>
+                            <p class="vibe-description">Quest for meaning and purpose</p>
+                            <div class="vibe-stats">
+                                <span class="quote-count">0 quotes</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="vibe-card premium" data-vibe="humor">
+                        <div class="vibe-icon">😄</div>
+                        <div class="vibe-content">
+                            <h3 class="vibe-title">Humor</h3>
+                            <p class="vibe-description">To relax and make smile</p>
+                            <div class="vibe-stats">
+                                <span class="quote-count">0 quotes</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="vibe-card premium" data-vibe="curiosity">
+                        <div class="vibe-icon">🔍</div>
+                        <div class="vibe-content">
+                            <h3 class="vibe-title">Curiosity</h3>
+                            <p class="vibe-description">For learning and discovery</p>
+                            <div class="vibe-stats">
+                                <span class="quote-count">0 quotes</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Negative Vibes (Unlockable) -->
+                    <div class="vibe-card negative-vibe" data-vibe="anger" style="display: none;">
+                        <div class="vibe-icon">😡</div>
+                        <div class="vibe-content">
+                            <h3 class="vibe-title">Anger</h3>
+                            <p class="vibe-description">Transform anger into action</p>
+                            <div class="vibe-stats">
+                                <span class="quote-count">0 quotes</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="vibe-card negative-vibe" data-vibe="sadness" style="display: none;">
+                        <div class="vibe-icon">😢</div>
+                        <div class="vibe-content">
+                            <h3 class="vibe-title">Sadness</h3>
+                            <p class="vibe-description">Navigate sadness with care</p>
+                            <div class="vibe-stats">
+                                <span class="quote-count">0 quotes</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="vibe-card negative-vibe" data-vibe="fear" style="display: none;">
+                        <div class="vibe-icon">😱</div>
+                        <div class="vibe-content">
+                            <h3 class="vibe-title">Fear</h3>
+                            <p class="vibe-description">Find courage amid fear</p>
+                            <div class="vibe-stats">
+                                <span class="quote-count">0 quotes</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="vibe-card negative-vibe" data-vibe="disgust" style="display: none;">
+                        <div class="vibe-icon">🤢</div>
+                        <div class="vibe-content">
+                            <h3 class="vibe-title">Disgust</h3>
+                            <p class="vibe-description">Turn disgust into boundaries</p>
+                            <div class="vibe-stats">
+                                <span class="quote-count">0 quotes</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="vibe-card negative-vibe" data-vibe="anxiety" style="display: none;">
+                        <div class="vibe-icon">😰</div>
+                        <div class="vibe-content">
+                            <h3 class="vibe-title">Anxiety</h3>
+                            <p class="vibe-description">Calm anxious thoughts</p>
+                            <div class="vibe-stats">
+                                <span class="quote-count">0 quotes</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="vibe-card negative-vibe" data-vibe="frustration" style="display: none;">
+                        <div class="vibe-icon">😤</div>
+                        <div class="vibe-content">
+                            <h3 class="vibe-title">Frustration</h3>
+                            <p class="vibe-description">Convert frustration to energy</p>
+                            <div class="vibe-stats">
+                                <span class="quote-count">0 quotes</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="vibe-card negative-vibe" data-vibe="guilt" style="display: none;">
+                        <div class="vibe-icon">😔</div>
+                        <div class="vibe-content">
+                            <h3 class="vibe-title">Guilt</h3>
+                            <p class="vibe-description">Learn and grow beyond guilt</p>
+                            <div class="vibe-stats">
+                                <span class="quote-count">0 quotes</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="vibe-card negative-vibe" data-vibe="shame" style="display: none;">
+                        <div class="vibe-icon">🙇‍♂️</div>
+                        <div class="vibe-content">
+                            <h3 class="vibe-title">Shame</h3>
+                            <p class="vibe-description">Reclaim self-worth</p>
                             <div class="vibe-stats">
                                 <span class="quote-count">0 quotes</span>
                             </div>
@@ -311,6 +508,28 @@
                         🗑️ Clear Context
                     </button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Empathy Copilot Modal -->
+    <div id="empathy-copilot-modal" class="empathy-copilot-modal" style="display: none;">
+        <div class="modal-overlay" id="empathy-copilot-overlay"></div>
+        <div class="modal-content empathy-copilot-modal-content">
+            <div class="modal-header">
+                <h3>💝 Empathy Copilot</h3>
+                <p>Talk to a compassionate agent who will find what's alive in you following NVC principles</p>
+                <button id="close-empathy-copilot-modal" class="close-modal-btn">✖️</button>
+            </div>
+            
+            <div class="modal-body empathy-copilot-body">
+                <iframe 
+                    id="empathy-copilot-iframe"
+                    src="https://app.relevanceai.com/agents/d7b62b/454efacc47da-463b-877a-66e43c7b454a/41bf2a5a-0c72-4d51-9f20-70170a770c0d/embed-chat?hide_tool_steps=false&hide_file_uploads=false&hide_conversation_list=false&bubble_style=agent&primary_color=%23685FFF&bubble_icon=pd%2Fchat&input_placeholder_text=Type+your+message...&hide_logo=true&hide_description=true" 
+                    width="100%" 
+                    height="100%" 
+                    frameborder="0">
+                </iframe>
             </div>
         </div>
     </div>

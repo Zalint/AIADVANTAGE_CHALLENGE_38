@@ -636,7 +636,7 @@ function cleanupOldEntries() {
  * Validate vibe parameter
  */
 function isValidVibe(vibe) {
-    const validVibes = ['gratitude', 'resilience', 'ambition', 'creativity', 'serenity', 'courage', 'wisdom', 'joy'];
+    const validVibes = ['gratitude', 'resilience', 'ambition', 'creativity', 'serenity', 'courage', 'wisdom', 'joy', 'love', 'hope', 'compassion', 'confidence', 'forgiveness', 'spirituality', 'humor', 'curiosity'];
     return validVibes.includes(vibe.toLowerCase());
 }
 
@@ -651,7 +651,15 @@ const generateQuoteImage = async (quote, vibe, language) => {
         serenity: '#a8dadc',
         courage: '#457b9d',
         wisdom: '#f1faee',
-        joy: '#ffb3ba'
+        joy: '#ffb3ba',
+        love: '#ff69b4',
+        hope: '#87ceeb',
+        compassion: '#dda0dd',
+        confidence: '#ffd700',
+        forgiveness: '#f0f8ff',
+        spirituality: '#9370db',
+        humor: '#ffa500',
+        curiosity: '#40e0d0'
     };
     
     return `data:image/svg+xml,${encodeURIComponent(`
