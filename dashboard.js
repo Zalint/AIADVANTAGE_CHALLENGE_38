@@ -9,10 +9,6 @@ class DashboardApp {
         this.clockInterval = null; // For real-time clock
         this.userLocation = null; // Cache user location
         
-        // Negative vibes unlock state
-        this.negativeVibes = ['anger', 'sadness', 'fear', 'disgust', 'anxiety', 'frustration', 'guilt', 'shame'];
-        this.negativeVibesUnlocked = this.loadNegativeVibesState();
-        
         // Initialize translations
         this.translations = {
             english: {
@@ -90,7 +86,7 @@ class DashboardApp {
                 longerQuotesDesc: "Generate multi-sentence quotes with deeper insights",
                 savePreferences: "Save Preferences",
                 clearContext: "Clear Context",
-                unlockButton: "🔓 Explore More Emotions",
+
                 empathyCopilotButtonTitle: "Talk to a compassionate agent who will find what's alive in you following NVC principles"
             },
             french: {
@@ -168,7 +164,7 @@ class DashboardApp {
                 longerQuotesDesc: "Générer des citations multi-phrases avec des insights plus profonds",
                 savePreferences: "Sauvegarder les Préférences",
                 clearContext: "Effacer le Contexte",
-                unlockButton: "🔓 Explorer Plus d'Émotions",
+
                 empathyCopilotButtonTitle: "Parlez à un agent compatissant qui trouvera ce qui vit en vous selon les principes de la CNV"
             },
             german: {
@@ -246,7 +242,7 @@ class DashboardApp {
                 longerQuotesDesc: "Mehrsätzige Zitate mit tieferen Einsichten generieren",
                 savePreferences: "Einstellungen Speichern",
                 clearContext: "Kontext Löschen",
-                unlockButton: "🔓 Weitere Emotionen Entdecken",
+
                 empathyCopilotButtonTitle: "Sprechen Sie mit einem mitfühlenden Agenten, der herausfindet, was in Ihnen lebendig ist, nach GFK-Prinzipien"
             },
             spanish: {
@@ -324,7 +320,7 @@ class DashboardApp {
                 longerQuotesDesc: "Generar citas de múltiples oraciones con insights más profundos",
                 savePreferences: "Guardar Preferencias",
                 clearContext: "Limpiar Contexto",
-                unlockButton: "🔓 Explorar Más Emociones",
+
                 empathyCopilotButtonTitle: "Habla con un agente compasivo que encontrará lo que está vivo en ti siguiendo los principios de CNV"
             },
             portuguese: {
@@ -402,7 +398,7 @@ class DashboardApp {
                 longerQuotesDesc: "Gerar citações de múltiplas frases com insights mais profundos",
                 savePreferences: "Salvar Preferências",
                 clearContext: "Limpar Contexto",
-                unlockButton: "🔓 Explorar Mais Emoções",
+
                 empathyCopilotButtonTitle: "Converse com um agente compassivo que encontrará o que está vivo em você seguindo os princípios da CNV"
             },
             italian: {
@@ -480,7 +476,7 @@ class DashboardApp {
                 longerQuotesDesc: "Genera citazioni multi-frase con intuizioni più profonde",
                 savePreferences: "Salva Preferenze",
                 clearContext: "Cancella Contesto",
-                unlockButton: "🔓 Esplora Altre Emozioni",
+
                 empathyCopilotButtonTitle: "Parla con un agente compassionevole che troverà ciò che è vivo in te seguendo i principi della CNV"
             },
             slovak: {
@@ -558,7 +554,7 @@ class DashboardApp {
                 longerQuotesDesc: "Generovať viacvetné citáty s hlbšími poznatkami",
                 savePreferences: "Uložiť Nastavenia",
                 clearContext: "Vymazať Kontext",
-                unlockButton: "🔓 Preskúmať Viac Emócií",
+
                 empathyCopilotButtonTitle: "Rozprávajte sa so súcitným agentom, ktorý nájde to, čo vo vás žije podľa princípov NKK"
             }
         };
@@ -796,14 +792,6 @@ class DashboardApp {
             await this.signOut();
         });
 
-        // Unlock negative vibes button
-        const unlockBtn = document.getElementById('unlock-emotions-btn');
-        if (unlockBtn) {
-            unlockBtn.addEventListener('click', () => {
-                this.unlockNegativeVibes();
-            });
-        }
-
         // Vibe card clicks
         document.querySelectorAll('.vibe-card').forEach(card => {
             card.addEventListener('click', () => {
@@ -865,9 +853,6 @@ class DashboardApp {
 
         // User Preferences
         this.initUserPreferences();
-        
-        // Initialize negative vibes unlock system
-        this.initNegativeVibesUnlock();
     }
 
     async generateQuote(vibe) {
@@ -1481,8 +1466,7 @@ class DashboardApp {
                 contextCounter.innerHTML = `${currentCount}/200 ${t.characters}`;
             }
             
-            // Update unlock button text
-            this.updateUnlockButtonText();
+
             
             // Update empathy copilot button title
             const empathyCopilotBtn = document.getElementById('empathy-copilot-btn');
@@ -1791,71 +1775,7 @@ class DashboardApp {
         document.body.style.overflow = ''; // Restore scrolling
     }
 
-    // Negative vibes unlock system
-    initNegativeVibesUnlock() {
-        this.loadNegativeVibesState();
-        this.updateNegativeVibesDisplay();
-        this.updateUnlockButtonText();
-    }
 
-    loadNegativeVibesState() {
-        this.negativeVibesUnlocked = localStorage.getItem('negativeVibesUnlocked') === 'true';
-    }
-
-    saveNegativeVibesState() {
-        localStorage.setItem('negativeVibesUnlocked', this.negativeVibesUnlocked.toString());
-    }
-
-    updateUnlockButtonText() {
-        const unlockBtn = document.getElementById('unlock-emotions-btn');
-        if (!unlockBtn) return;
-
-        const t = this.translations[this.currentLanguage] || this.translations.english;
-        
-        if (this.negativeVibesUnlocked) {
-            unlockBtn.style.display = 'none';
-        } else {
-            unlockBtn.style.display = 'block';
-            unlockBtn.textContent = t.unlockButton || '🔓 Explorer d\'autres émotions';
-        }
-    }
-
-    updateNegativeVibesDisplay() {
-        const negativeVibeCards = document.querySelectorAll('.vibe-card.negative-vibe');
-        negativeVibeCards.forEach(card => {
-            if (this.negativeVibesUnlocked) {
-                card.style.display = 'block';
-            } else {
-                card.style.display = 'none';
-            }
-        });
-    }
-
-    unlockNegativeVibes() {
-        const unlockBtn = document.getElementById('unlock-emotions-btn');
-        if (!unlockBtn || this.negativeVibesUnlocked) return;
-
-        // Add shimmer effect
-        unlockBtn.classList.add('shimmer');
-        unlockBtn.disabled = true;
-        
-        setTimeout(() => {
-            this.negativeVibesUnlocked = true;
-            this.saveNegativeVibesState();
-            
-            // Hide unlock button
-            unlockBtn.style.display = 'none';
-            
-            // Show negative vibe cards with animation
-            this.updateNegativeVibesDisplay();
-            
-            // Show success message
-            this.showMessage('🔓 Negative emotions unlocked! You can now explore these deeper feelings.', 'success');
-            
-            unlockBtn.classList.remove('shimmer');
-            unlockBtn.disabled = false;
-        }, 1000);
-    }
 
     showMessage(message, type = 'info') {
         // Create message element
